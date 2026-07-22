@@ -626,6 +626,57 @@ export interface ChartOfAccount {
   updated_at: string
 }
 
+export interface TdsRegistration {
+  id: string
+  client_id: string
+  tan: string
+  pan_of_deductor: string
+  legal_name: string
+  address?: string
+  is_deductor: boolean
+  is_collector: boolean
+  is_active: boolean
+  created_at: string
+}
+
+export interface TdsDeduction {
+  id: string
+  client_id: string
+  section: string
+  deductor_name: string
+  deductor_pan: string
+  deductee_name: string
+  deductee_pan: string
+  invoice_number?: string
+  payment_date: string
+  payment_amount: number
+  tds_rate: number
+  tds_amount: number
+  surcharge: number
+  education_cess: number
+  total_tds: number
+  quarter: string
+  financial_year: string
+  status: string
+  challan_cin?: string
+  challan_date?: string
+}
+
+export interface TdsReturn {
+  id: string
+  client_id: string
+  form_type: string
+  quarter: string
+  financial_year: string
+  due_date: string
+  filing_date?: string
+  status: string
+  total_deductions: number
+  total_tds_amount: number
+  total_deposited: number
+  acknowledgement?: string
+}
+
 export interface FinancialYear {
   id: string
   org_id: string

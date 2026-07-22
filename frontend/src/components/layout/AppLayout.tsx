@@ -41,6 +41,7 @@ const navItems = [
   { icon: Inbox, label: 'Inbox', href: '/inbox' },
   { icon: FileText, label: 'Tax', href: '/tax' },
   { icon: IndianRupee, label: 'GST', href: '/gst' },
+  { icon: Landmark, label: 'TDS', href: '/tds' },
   { icon: Plug, label: 'Integrations', href: '/integrations' },
   { icon: Settings, label: 'Settings', href: '/settings' },
 ]
