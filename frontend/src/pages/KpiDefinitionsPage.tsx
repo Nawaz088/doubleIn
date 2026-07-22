@@ -4,17 +4,9 @@ import { ArrowLeft, Plus, Trash2, GripVertical } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/status-badge'
 import { scorecardApi } from '@/api/scorecards'
 import type { KpiDefinition } from '@/types'
-import { cn } from '@/lib/utils'
-
-const categoryColors: Record<string, string> = {
-  productivity: 'text-blue-400 bg-blue-500/10',
-  financial: 'text-green-400 bg-green-500/10',
-  client_health: 'text-purple-400 bg-purple-500/10',
-  custom: 'text-gray-400 bg-gray-500/10',
-}
 
 export function KpiDefinitionsPage() {
   const navigate = useNavigate()
@@ -127,11 +119,9 @@ export function KpiDefinitionsPage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <span className="font-medium">{def.name}</span>
-                        <Badge className={cn('text-xs', categoryColors[def.category])}>
-                          {def.category.replace('_', ' ')}
-                        </Badge>
+                        <StatusBadge status={def.category === 'custom' ? 'todo' : def.category} label={def.category.replace('_', ' ')} />
                         {def.is_prebuilt && (
-                          <Badge variant="outline" className="text-xs">Auto</Badge>
+                          <StatusBadge status="todo" label="Auto" />
                         )}
                       </div>
                       {def.description && (

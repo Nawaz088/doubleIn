@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Search, Mail, CheckSquare, ChevronLeft } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
 import { apiFetch } from '@/api/client'
 import type { EmailMessage } from '@/types'
 
@@ -49,8 +48,13 @@ export function InboxPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <div className="space-y-4">
+        <div>
+          <div className="skeleton h-8 w-32 rounded-lg" />
+          <div className="skeleton h-4 w-48 rounded-lg mt-2" />
+        </div>
+        <div className="skeleton h-10 w-80 rounded-xl" />
+        <div className="skeleton h-64 w-full rounded-xl" />
       </div>
     )
   }

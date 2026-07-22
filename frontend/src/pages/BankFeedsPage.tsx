@@ -1,29 +1,14 @@
 import { useState, useEffect } from 'react'
 import {
-  Search, Filter, Check, X, ChevronDown, Plus, Landmark,
+  Search, Filter, Check, Plus, Landmark,
 } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/status-badge'
 import { apiFetch } from '@/api/client'
 import { cn } from '@/lib/utils'
-import type { BankTransaction, ClassificationRule, Client } from '@/types'
-
-const statusConfig: Record<string, { label: string; variant: 'success' | 'warning' | 'outline' | 'danger' }> = {
-  pending: { label: 'Pending', variant: 'outline' },
-  matched: { label: 'Matched', variant: 'success' },
-  classified: { label: 'Classified', variant: 'warning' },
-  needs_review: { label: 'Needs Review', variant: 'danger' },
-  posted: { label: 'Posted', variant: 'success' },
-}
-
-const tierConfig: Record<string, { label: string; variant: 'success' | 'warning' | 'outline' }> = {
-  match: { label: 'Match', variant: 'success' },
-  rule: { label: 'Rule', variant: 'warning' },
-  manual: { label: 'Manual', variant: 'outline' },
-  unclassified: { label: 'Unclassified', variant: 'outline' },
-}
+import type { BankTransaction, ClassificationRule } from '@/types'
 
 export function BankFeedsPage() {
   const [transactions, setTransactions] = useState<BankTransaction[]>([])
@@ -94,8 +79,15 @@ export function BankFeedsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="skeleton h-8 w-48 rounded-lg" />
+            <div className="skeleton h-4 w-64 rounded-lg mt-2" />
+          </div>
+        </div>
+        <div className="skeleton h-10 w-full rounded-xl" />
+        <div className="skeleton h-64 w-full rounded-xl" />
       </div>
     )
   }
@@ -136,7 +128,7 @@ export function BankFeedsPage() {
               <Input placeholder="Search transactions..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
             </div>
             <select
-              className="flex h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              className="flex h-9 rounded-lg border bg-card pl-3 pr-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
             >
@@ -148,7 +140,7 @@ export function BankFeedsPage() {
               <option value="posted">Posted</option>
             </select>
             <select
-              className="flex h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              className="flex h-9 rounded-lg border bg-card pl-3 pr-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
               value={tierFilter}
               onChange={(e) => setTierFilter(e.target.value)}
             >
@@ -175,65 +167,59 @@ export function BankFeedsPage() {
               <p className="text-muted-foreground">Connect a bank account to see transactions here.</p>
             </Card>
           ) : (
-            <Card>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b text-left">
-                      <th className="p-3 text-sm font-medium text-muted-foreground w-10">
-                        <input type="checkbox" onChange={(e) => {
-                          if (e.target.checked) setSelected(new Set(filtered.map((t) => t.id)))
-                          else setSelected(new Set())
-                        }} />
-                      </th>
-                      <th className="p-3 text-sm font-medium text-muted-foreground">Date</th>
-                      <th className="p-3 text-sm font-medium text-muted-foreground">Description</th>
-                      <th className="p-3 text-sm font-medium text-muted-foreground">Amount</th>
-                      <th className="p-3 text-sm font-medium text-muted-foreground">Vendor</th>
-                      <th className="p-3 text-sm font-medium text-muted-foreground">Category</th>
-                      <th className="p-3 text-sm font-medium text-muted-foreground">Status</th>
-                      <th className="p-3 text-sm font-medium text-muted-foreground">Tier</th>
-                      <th className="p-3 text-sm font-medium text-muted-foreground">Actions</th>
+            <div className="rounded-xl border overflow-hidden">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b bg-muted/50">
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider w-10">
+                      <input type="checkbox" onChange={(e) => {
+                        if (e.target.checked) setSelected(new Set(filtered.map((t) => t.id)))
+                        else setSelected(new Set())
+                      }} />
+                    </th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Description</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Amount</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Vendor</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Category</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Tier</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {filtered.map((t) => (
+                    <tr key={t.id} className="hover:bg-accent/50 transition-colors">
+                      <td className="p-3">
+                        <input type="checkbox" checked={selected.has(t.id)} onChange={() => toggleSelect(t.id)} />
+                      </td>
+                      <td className="p-3 text-sm">{new Date(t.date).toLocaleDateString()}</td>
+                      <td className="p-3 text-sm max-w-[200px] truncate">{t.description}</td>
+                      <td className={cn('p-3 text-sm font-mono', t.amount < 0 ? 'text-red-400' : 'text-emerald-400')}>
+                        ${Math.abs(t.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                      </td>
+                      <td className="p-3 text-sm text-muted-foreground">{t.vendor_name || '—'}</td>
+                      <td className="p-3 text-sm text-muted-foreground">{t.category || '—'}</td>
+                      <td className="p-3">
+                        <StatusBadge status={t.status} />
+                      </td>
+                      <td className="p-3">
+                        <StatusBadge status={t.classification_tier} />
+                      </td>
+                      <td className="p-3">
+                        <div className="flex items-center gap-1">
+                          {t.status === 'needs_review' && (
+                            <Button variant="ghost" size="sm" onClick={() => handleApprove(t.id)}>
+                              <Check className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {filtered.map((t) => (
-                      <tr key={t.id} className="border-b last:border-0 hover:bg-muted/50 transition-colors">
-                        <td className="p-3">
-                          <input type="checkbox" checked={selected.has(t.id)} onChange={() => toggleSelect(t.id)} />
-                        </td>
-                        <td className="p-3 text-sm">{new Date(t.date).toLocaleDateString()}</td>
-                        <td className="p-3 text-sm max-w-[200px] truncate">{t.description}</td>
-                        <td className={cn('p-3 text-sm font-mono', t.amount < 0 ? 'text-red-400' : 'text-emerald-400')}>
-                          ${Math.abs(t.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                        </td>
-                        <td className="p-3 text-sm text-muted-foreground">{t.vendor_name || '—'}</td>
-                        <td className="p-3 text-sm text-muted-foreground">{t.category || '—'}</td>
-                        <td className="p-3">
-                          <Badge variant={statusConfig[t.status]?.variant || 'outline'}>
-                            {statusConfig[t.status]?.label || t.status}
-                          </Badge>
-                        </td>
-                        <td className="p-3">
-                          <Badge variant={tierConfig[t.classification_tier]?.variant || 'outline'}>
-                            {tierConfig[t.classification_tier]?.label || t.classification_tier}
-                          </Badge>
-                        </td>
-                        <td className="p-3">
-                          <div className="flex items-center gap-1">
-                            {t.status === 'needs_review' && (
-                              <Button variant="ghost" size="sm" onClick={() => handleApprove(t.id)}>
-                                <Check className="w-4 h-4" />
-                              </Button>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </Card>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </>
       )}
@@ -254,9 +240,7 @@ export function BankFeedsPage() {
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-medium">Rule #{rule.priority}</span>
-                        <Badge variant={rule.is_active ? 'success' : 'outline'}>
-                          {rule.is_active ? 'Active' : 'Inactive'}
-                        </Badge>
+                        <StatusBadge status={rule.is_active ? 'active' : 'inactive'} />
                       </div>
                       <p className="text-xs text-muted-foreground mt-1">
                         Conditions: {JSON.stringify(rule.conditions)} | Actions: {JSON.stringify(rule.actions)}

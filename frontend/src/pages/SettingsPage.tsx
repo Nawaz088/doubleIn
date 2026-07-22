@@ -3,7 +3,7 @@ import { Save, Building2, CreditCard, Users, Bell, UserPlus, Trash2 } from 'luci
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/status-badge'
 import { apiFetch } from '@/api/client'
 import type { Organization } from '@/types'
 
@@ -78,8 +78,19 @@ export function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <div className="space-y-6">
+        <div>
+          <div className="skeleton h-8 w-48 rounded-lg" />
+          <div className="skeleton h-4 w-64 rounded-lg mt-2" />
+        </div>
+        <div className="flex gap-6">
+          <div className="w-48 space-y-2">
+            <div className="skeleton h-9 rounded-lg" />
+            <div className="skeleton h-9 rounded-lg" />
+            <div className="skeleton h-9 rounded-lg" />
+          </div>
+          <div className="flex-1 skeleton h-64 rounded-xl" />
+        </div>
       </div>
     )
   }
@@ -204,9 +215,7 @@ export function SettingsPage() {
                           <option value="admin">Admin</option>
                           <option value="member">Member</option>
                         </select>
-                        <Badge variant={m.is_active ? 'success' : 'outline'}>
-                          {m.is_active ? 'Active' : 'Inactive'}
-                        </Badge>
+                        <StatusBadge status={m.is_active ? 'active' : 'inactive'} />
                         <Button variant="ghost" size="icon" onClick={() => handleRemove(m.id)}>
                           <Trash2 className="w-3.5 h-3.5 text-muted-foreground" />
                         </Button>

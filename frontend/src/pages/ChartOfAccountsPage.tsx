@@ -3,15 +3,15 @@ import { apiFetch } from '@/api/client'
 import type { ChartOfAccount } from '@/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/status-badge'
 import { BookOpen, Upload } from 'lucide-react'
 
-const accountTypeColors: Record<string, string> = {
-  equity: 'bg-purple-100 text-purple-800',
-  assets: 'bg-green-100 text-green-800',
-  liabilities: 'bg-orange-100 text-orange-800',
-  income: 'bg-blue-100 text-blue-800',
-  expenses: 'bg-red-100 text-red-800',
+const accountTypeStyleMap: Record<string, string> = {
+  equity: 'final',
+  assets: 'active',
+  liabilities: 'draft',
+  income: 'in_progress',
+  expenses: 'error',
 }
 
 export function ChartOfAccountsPage() {
@@ -64,7 +64,10 @@ export function ChartOfAccountsPage() {
       </div>
 
       {loading ? (
-        <p className="text-muted-foreground">Loading...</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="skeleton h-64 rounded-xl" />
+          <div className="skeleton h-64 rounded-xl" />
+        </div>
       ) : accounts.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
@@ -94,9 +97,7 @@ export function ChartOfAccountsPage() {
                           <code className="text-xs text-muted-foreground w-16">{acct.code}</code>
                           <span className="text-sm">{acct.name}</span>
                         </div>
-                        <Badge className={accountTypeColors[acct.type] || ''}>
-                          {acct.type}
-                        </Badge>
+                        <StatusBadge status={accountTypeStyleMap[acct.type] || 'todo'} label={acct.type} />
                       </div>
                     ))}
                   </div>

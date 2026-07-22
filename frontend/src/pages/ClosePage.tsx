@@ -4,7 +4,7 @@ import {
   ArrowLeft, CheckCircle2, Circle, Clock, AlertCircle, ChevronDown, ChevronRight,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/status-badge'
 import { Button } from '@/components/ui/button'
 import { apiFetch } from '@/api/client'
 import { cn } from '@/lib/utils'
@@ -81,8 +81,16 @@ export function ClosePage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <div className="space-y-4">
+        <div className="flex items-center gap-4">
+          <div className="skeleton h-5 w-5 rounded" />
+          <div>
+            <div className="skeleton h-8 w-64 rounded-lg" />
+            <div className="skeleton h-4 w-48 rounded-lg mt-2" />
+          </div>
+        </div>
+        <div className="skeleton h-24 w-full rounded-xl" />
+        <div className="skeleton h-48 w-full rounded-xl" />
       </div>
     )
   }
@@ -180,9 +188,7 @@ export function ClosePage() {
                                   {new Date(task.due_date).toLocaleDateString()}
                                 </span>
                               )}
-                              <Badge variant={task.status === 'done' ? 'success' : task.status === 'in_progress' ? 'warning' : 'outline'} className="text-xs">
-                                {task.status.replace('_', ' ')}
-                              </Badge>
+                              <StatusBadge status={task.status} />
                             </Link>
                           )
                         })}

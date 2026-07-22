@@ -3,17 +3,9 @@ import { Link } from 'react-router-dom'
 import { Plus, FileText, Calendar, MoreVertical } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/status-badge'
 import { scorecardApi } from '@/api/scorecards'
-import { cn } from '@/lib/utils'
 import type { Scorecard } from '@/types'
-
-const statusConfig: Record<string, { label: string; variant: 'outline' | 'default' | 'success' | 'warning' | 'danger' }> = {
-  draft: { label: 'Draft', variant: 'outline' },
-  in_review: { label: 'In Review', variant: 'warning' },
-  published: { label: 'Published', variant: 'success' },
-  archived: { label: 'Archived', variant: 'outline' },
-}
 
 const frequencyLabels: Record<string, string> = {
   weekly: 'Weekly',
@@ -35,8 +27,22 @@ export function ScorecardsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="skeleton h-8 w-48 rounded-lg" />
+            <div className="skeleton h-4 w-64 rounded-lg mt-2" />
+          </div>
+          <div className="flex gap-2">
+            <div className="skeleton h-9 w-28 rounded-lg" />
+            <div className="skeleton h-9 w-32 rounded-lg" />
+          </div>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="skeleton h-36 rounded-xl" />
+          <div className="skeleton h-36 rounded-xl" />
+          <div className="skeleton h-36 rounded-xl" />
+        </div>
       </div>
     )
   }
@@ -85,9 +91,7 @@ export function ScorecardsPage() {
                 <CardContent className="p-6 space-y-3">
                   <div className="flex items-start justify-between">
                     <h3 className="font-semibold text-lg">{sc.name}</h3>
-                    <Badge variant={statusConfig[sc.status]?.variant || 'outline'}>
-                      {statusConfig[sc.status]?.label || sc.status}
-                    </Badge>
+                    <StatusBadge status={sc.status} />
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Calendar className="w-3.5 h-3.5" />

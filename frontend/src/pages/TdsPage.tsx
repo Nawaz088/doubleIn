@@ -3,7 +3,7 @@ import { apiFetch } from '@/api/client'
 import type { TdsRegistration, TdsDeduction, TdsReturn } from '@/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/status-badge'
 import { Input } from '@/components/ui/input'
 import { Landmark, Plus, Search } from 'lucide-react'
 
@@ -38,16 +38,7 @@ export function TdsPage() {
     }
   }
 
-  function getStatusBadge(status: string) {
-    const variants: Record<string, string> = {
-      deducted: 'bg-blue-100 text-blue-800',
-      deposited: 'bg-green-100 text-green-800',
-      pending: 'bg-yellow-100 text-yellow-800',
-      filed: 'bg-green-100 text-green-800',
-      error: 'bg-red-100 text-red-800',
-    }
-    return variants[status] || 'bg-gray-100 text-gray-800'
-  }
+
 
   const tabs: { key: Tab; label: string }[] = [
     { key: 'registrations', label: 'TAN Registrations' },
@@ -98,7 +89,10 @@ export function TdsPage() {
       {activeTab === 'registrations' && (
         <div className="grid gap-4 md:grid-cols-2">
           {loading ? (
-            <p className="text-muted-foreground">Loading...</p>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="skeleton h-48 rounded-xl" />
+              <div className="skeleton h-48 rounded-xl" />
+            </div>
           ) : registrations.length === 0 ? (
             <Card className="md:col-span-2">
               <CardContent className="py-8 text-center text-muted-foreground">
@@ -111,9 +105,7 @@ export function TdsPage() {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg font-mono">{reg.tan}</CardTitle>
-                    <Badge variant={reg.is_active ? 'success' : 'outline'}>
-                      {reg.is_active ? 'Active' : 'Inactive'}
-                    </Badge>
+                    <StatusBadge status={reg.is_active ? 'active' : 'inactive'} />
                   </div>
                 </CardHeader>
                 <CardContent className="text-sm space-y-1">
@@ -131,40 +123,42 @@ export function TdsPage() {
         <Card>
           <CardContent className="p-0">
             {loading ? (
-              <p className="p-6 text-muted-foreground">Loading...</p>
+              <div className="skeleton h-64 w-full" />
             ) : deductions.length === 0 ? (
               <p className="p-6 text-center text-muted-foreground">No TDS deductions recorded yet.</p>
             ) : (
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b text-left">
-                    <th className="p-3 text-xs font-medium text-muted-foreground">Section</th>
-                    <th className="p-3 text-xs font-medium text-muted-foreground">Deductee</th>
-                    <th className="p-3 text-xs font-medium text-muted-foreground">PAN</th>
-                    <th className="p-3 text-xs font-medium text-muted-foreground">Payment</th>
-                    <th className="p-3 text-xs font-medium text-muted-foreground">Rate</th>
-                    <th className="p-3 text-xs font-medium text-muted-foreground">TDS</th>
-                    <th className="p-3 text-xs font-medium text-muted-foreground">Period</th>
-                    <th className="p-3 text-xs font-medium text-muted-foreground">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {deductions.map((d) => (
-                    <tr key={d.id} className="border-b last:border-0 hover:bg-accent/50">
-                      <td className="p-3 font-mono text-sm font-medium">{d.section}</td>
-                      <td className="p-3 text-sm">{d.deductee_name}</td>
-                      <td className="p-3 font-mono text-sm">{d.deductee_pan}</td>
-                      <td className="p-3 text-sm">₹{d.payment_amount.toLocaleString()}</td>
-                      <td className="p-3 text-sm">{d.tds_rate}%</td>
-                      <td className="p-3 text-sm font-medium">₹{d.total_tds.toLocaleString()}</td>
-                      <td className="p-3 text-sm">{d.financial_year} {d.quarter}</td>
-                      <td className="p-3">
-                        <Badge className={getStatusBadge(d.status)}>{d.status}</Badge>
-                      </td>
+              <div className="rounded-xl border overflow-hidden">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b bg-muted/50">
+                      <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Section</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Deductee</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">PAN</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Payment</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Rate</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">TDS</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Period</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {deductions.map((d) => (
+                      <tr key={d.id} className="hover:bg-accent/50 transition-colors">
+                        <td className="p-3 font-mono text-sm font-medium">{d.section}</td>
+                        <td className="p-3 text-sm">{d.deductee_name}</td>
+                        <td className="p-3 font-mono text-sm">{d.deductee_pan}</td>
+                        <td className="p-3 text-sm">₹{d.payment_amount.toLocaleString()}</td>
+                        <td className="p-3 text-sm">{d.tds_rate}%</td>
+                        <td className="p-3 text-sm font-medium">₹{d.total_tds.toLocaleString()}</td>
+                        <td className="p-3 text-sm">{d.financial_year} {d.quarter}</td>
+                        <td className="p-3">
+                          <StatusBadge status={d.status} />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -174,40 +168,42 @@ export function TdsPage() {
         <Card>
           <CardContent className="p-0">
             {loading ? (
-              <p className="p-6 text-muted-foreground">Loading...</p>
+              <div className="skeleton h-64 w-full" />
             ) : returns.length === 0 ? (
               <p className="p-6 text-center text-muted-foreground">No TDS returns filed yet.</p>
             ) : (
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b text-left">
-                    <th className="p-3 text-xs font-medium text-muted-foreground">Form</th>
-                    <th className="p-3 text-xs font-medium text-muted-foreground">Period</th>
-                    <th className="p-3 text-xs font-medium text-muted-foreground">FY</th>
-                    <th className="p-3 text-xs font-medium text-muted-foreground">Due Date</th>
-                    <th className="p-3 text-xs font-medium text-muted-foreground">Deductions</th>
-                    <th className="p-3 text-xs font-medium text-muted-foreground">TDS Amount</th>
-                    <th className="p-3 text-xs font-medium text-muted-foreground">Status</th>
-                    <th className="p-3 text-xs font-medium text-muted-foreground">Ack</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {returns.map((r) => (
-                    <tr key={r.id} className="border-b last:border-0 hover:bg-accent/50">
-                      <td className="p-3 text-sm font-medium">{r.form_type}</td>
-                      <td className="p-3 text-sm">{r.quarter}</td>
-                      <td className="p-3 text-sm">{r.financial_year}</td>
-                      <td className="p-3 text-sm">{r.due_date}</td>
-                      <td className="p-3 text-sm">{r.total_deductions}</td>
-                      <td className="p-3 text-sm">₹{r.total_tds_amount.toLocaleString()}</td>
-                      <td className="p-3">
-                        <Badge className={getStatusBadge(r.status)}>{r.status}</Badge>
-                      </td>
-                      <td className="p-3 text-xs font-mono">{r.acknowledgement || '-'}</td>
+              <div className="rounded-xl border overflow-hidden">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b bg-muted/50">
+                      <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Form</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Period</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">FY</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Due Date</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Deductions</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">TDS Amount</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Ack</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {returns.map((r) => (
+                      <tr key={r.id} className="hover:bg-accent/50 transition-colors">
+                        <td className="p-3 text-sm font-medium">{r.form_type}</td>
+                        <td className="p-3 text-sm">{r.quarter}</td>
+                        <td className="p-3 text-sm">{r.financial_year}</td>
+                        <td className="p-3 text-sm">{r.due_date}</td>
+                        <td className="p-3 text-sm">{r.total_deductions}</td>
+                        <td className="p-3 text-sm">₹{r.total_tds_amount.toLocaleString()}</td>
+                        <td className="p-3">
+                          <StatusBadge status={r.status} />
+                        </td>
+                        <td className="p-3 text-xs font-mono">{r.acknowledgement || '-'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </CardContent>
         </Card>

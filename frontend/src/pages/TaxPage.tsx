@@ -3,23 +3,9 @@ import { Plus, FileText, Calendar, ClipboardList, FileCheck, User, IndianRupee, 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/status-badge'
 import { apiFetch } from '@/api/client'
 import type { TaxReturn, TaxOrganizer, Client, ItrFiling, McaFiling, AdvanceTaxInstallment } from '@/types'
-
-const returnStatusConfig: Record<string, { label: string; variant: 'success' | 'warning' | 'outline' | 'danger' }> = {
-  draft: { label: 'Draft', variant: 'outline' },
-  in_progress: { label: 'In Progress', variant: 'warning' },
-  review: { label: 'Review', variant: 'danger' },
-  ready_to_file: { label: 'Ready To File', variant: 'success' },
-  filed: { label: 'Filed', variant: 'success' },
-}
-
-const organizerStatusConfig: Record<string, { label: string; variant: 'success' | 'warning' | 'outline' }> = {
-  draft: { label: 'Draft', variant: 'outline' },
-  published: { label: 'Published', variant: 'success' },
-  completed: { label: 'Completed', variant: 'success' },
-}
 
 export function TaxPage() {
   const [returns, setReturns] = useState<TaxReturn[]>([])
@@ -93,8 +79,15 @@ export function TaxPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="skeleton h-8 w-32 rounded-lg" />
+            <div className="skeleton h-4 w-48 rounded-lg mt-2" />
+          </div>
+        </div>
+        <div className="skeleton h-10 w-full rounded-xl" />
+        <div className="skeleton h-64 w-full rounded-xl" />
       </div>
     )
   }
@@ -157,43 +150,39 @@ export function TaxPage() {
               <p className="text-muted-foreground">Create tax returns to track filing progress.</p>
             </Card>
           ) : (
-            <Card>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b text-left">
-                      <th className="p-3 text-sm font-medium text-muted-foreground">Year</th>
-                      <th className="p-3 text-sm font-medium text-muted-foreground">Form</th>
-                      <th className="p-3 text-sm font-medium text-muted-foreground">Status</th>
-                      <th className="p-3 text-sm font-medium text-muted-foreground">Due Date</th>
-                      <th className="p-3 text-sm font-medium text-muted-foreground">Assignee</th>
+            <div className="rounded-xl border overflow-hidden">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b bg-muted/50">
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Year</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Form</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Due Date</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Assignee</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {returns.map((r) => (
+                    <tr key={r.id} className="hover:bg-accent/50 transition-colors">
+                      <td className="p-3 text-sm">{r.tax_year}</td>
+                      <td className="p-3 text-sm">{r.form_type}</td>
+                      <td className="p-3">
+                        <StatusBadge status={r.status} />
+                      </td>
+                      <td className="p-3 text-sm">
+                        {r.due_date ? new Date(r.due_date).toLocaleDateString() : '—'}
+                      </td>
+                      <td className="p-3 text-sm text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <User className="w-3 h-3" />
+                          {r.assigned_to || 'Unassigned'}
+                        </span>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {returns.map((r) => (
-                      <tr key={r.id} className="border-b last:border-0 hover:bg-muted/50 transition-colors">
-                        <td className="p-3 text-sm">{r.tax_year}</td>
-                        <td className="p-3 text-sm">{r.form_type}</td>
-                        <td className="p-3">
-                          <Badge variant={returnStatusConfig[r.status]?.variant || 'outline'}>
-                            {returnStatusConfig[r.status]?.label || r.status}
-                          </Badge>
-                        </td>
-                        <td className="p-3 text-sm">
-                          {r.due_date ? new Date(r.due_date).toLocaleDateString() : '—'}
-                        </td>
-                        <td className="p-3 text-sm text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <User className="w-3 h-3" />
-                            {r.assigned_to || 'Unassigned'}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </Card>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </>
       )}
@@ -223,9 +212,7 @@ export function TaxPage() {
                         <h3 className="font-medium">Tax Year {o.tax_year}</h3>
                       </div>
                     </div>
-                    <Badge variant={organizerStatusConfig[o.status]?.variant || 'outline'}>
-                      {organizerStatusConfig[o.status]?.label || o.status}
-                    </Badge>
+                    <StatusBadge status={o.status} />
                   </CardContent>
                 </Card>
               ))}
@@ -257,42 +244,38 @@ export function TaxPage() {
               <p className="text-muted-foreground">Track ITR-1 to ITR-7 filings for your clients.</p>
             </Card>
           ) : (
-            <Card>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b text-left">
-                      <th className="p-3 text-xs font-medium text-muted-foreground">Form</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">FY</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">AY</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">Income</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">Tax</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">Refund</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">Status</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">Ack</th>
+            <div className="rounded-xl border overflow-hidden">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b bg-muted/50">
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Form</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">FY</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">AY</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Income</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Tax</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Refund</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Ack</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {itrFilings.map((f) => (
+                    <tr key={f.id} className="hover:bg-accent/50 transition-colors">
+                      <td className="p-3 text-sm font-medium">{f.form_type}</td>
+                      <td className="p-3 text-sm">{f.financial_year}</td>
+                      <td className="p-3 text-sm">{f.assessment_year}</td>
+                      <td className="p-3 text-sm">₹{f.gross_income.toLocaleString()}</td>
+                      <td className="p-3 text-sm">₹{f.total_tax.toLocaleString()}</td>
+                      <td className="p-3 text-sm text-emerald-600">₹{f.refund_amount.toLocaleString()}</td>
+                      <td className="p-3">
+                        <StatusBadge status={f.status} />
+                      </td>
+                      <td className="p-3 text-xs font-mono">{f.itr_acknowledgement || '-'}</td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {itrFilings.map((f) => (
-                      <tr key={f.id} className="border-b last:border-0 hover:bg-muted/50">
-                        <td className="p-3 text-sm font-medium">{f.form_type}</td>
-                        <td className="p-3 text-sm">{f.financial_year}</td>
-                        <td className="p-3 text-sm">{f.assessment_year}</td>
-                        <td className="p-3 text-sm">₹{f.gross_income.toLocaleString()}</td>
-                        <td className="p-3 text-sm">₹{f.total_tax.toLocaleString()}</td>
-                        <td className="p-3 text-sm text-green-600">₹{f.refund_amount.toLocaleString()}</td>
-                        <td className="p-3">
-                          <Badge variant={returnStatusConfig[f.status]?.variant || 'outline'}>
-                            {returnStatusConfig[f.status]?.label || f.status}
-                          </Badge>
-                        </td>
-                        <td className="p-3 text-xs font-mono">{f.itr_acknowledgement || '-'}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </Card>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       )}
@@ -312,40 +295,36 @@ export function TaxPage() {
               <p className="text-muted-foreground">Track AOC-4, MGT-7, and other MCA filings.</p>
             </Card>
           ) : (
-            <Card>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b text-left">
-                      <th className="p-3 text-xs font-medium text-muted-foreground">Form</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">Company</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">FY</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">Due</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">Filed</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">Status</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">SRN</th>
+            <div className="rounded-xl border overflow-hidden">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b bg-muted/50">
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Form</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Company</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">FY</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Due</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Filed</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">SRN</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {mcaFilings.map((f) => (
+                    <tr key={f.id} className="hover:bg-accent/50 transition-colors">
+                      <td className="p-3 text-sm font-medium">{f.form_type}</td>
+                      <td className="p-3 text-sm">{f.company_name}</td>
+                      <td className="p-3 text-sm">{f.financial_year}</td>
+                      <td className="p-3 text-sm">{f.due_date}</td>
+                      <td className="p-3 text-sm">{f.filing_date || '-'}</td>
+                      <td className="p-3">
+                        <StatusBadge status={f.status} />
+                      </td>
+                      <td className="p-3 text-xs font-mono">{f.srn || '-'}</td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {mcaFilings.map((f) => (
-                      <tr key={f.id} className="border-b last:border-0 hover:bg-muted/50">
-                        <td className="p-3 text-sm font-medium">{f.form_type}</td>
-                        <td className="p-3 text-sm">{f.company_name}</td>
-                        <td className="p-3 text-sm">{f.financial_year}</td>
-                        <td className="p-3 text-sm">{f.due_date}</td>
-                        <td className="p-3 text-sm">{f.filing_date || '-'}</td>
-                        <td className="p-3">
-                          <Badge className={f.status === 'filed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}>
-                            {f.status}
-                          </Badge>
-                        </td>
-                        <td className="p-3 text-xs font-mono">{f.srn || '-'}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </Card>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       )}
@@ -359,23 +338,22 @@ export function TaxPage() {
               <p className="text-muted-foreground">Track advance tax installments due on 15-Jun, 15-Sep, 15-Dec, 15-Mar.</p>
             </Card>
           ) : (
-            <Card>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b text-left">
-                      <th className="p-3 text-xs font-medium text-muted-foreground">Inst.</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">FY</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">Due</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">Amount Due</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">Paid</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">Balance</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">Status</th>
+            <div className="rounded-xl border overflow-hidden">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b bg-muted/50">
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Inst.</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">FY</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Due</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Amount Due</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Paid</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Balance</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="divide-y divide-border">
                     {advanceTax.map((a) => (
-                      <tr key={a.id} className="border-b last:border-0 hover:bg-muted/50">
+                      <tr key={a.id} className="hover:bg-accent/50 transition-colors">
                         <td className="p-3 text-sm font-medium">#{a.installment_no}</td>
                         <td className="p-3 text-sm">{a.financial_year}</td>
                         <td className="p-3 text-sm">{a.due_date}</td>
@@ -383,16 +361,13 @@ export function TaxPage() {
                         <td className="p-3 text-sm">₹{a.amount_paid.toLocaleString()}</td>
                         <td className="p-3 text-sm font-medium">₹{(a.amount_due - a.amount_paid).toLocaleString()}</td>
                         <td className="p-3">
-                          <Badge className={a.status === 'paid' ? 'bg-green-100 text-green-800' : a.status === 'partial' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'}>
-                            {a.status}
-                          </Badge>
+                          <StatusBadge status={a.status} />
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-            </Card>
           )}
         </div>
       )}

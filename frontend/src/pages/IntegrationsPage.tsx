@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Plug, RefreshCw, CheckCircle2, XCircle, Clock, ExternalLink, IndianRupee, Building2, Smartphone } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/status-badge'
 import { apiFetch } from '@/api/client'
 import type { Integration, SyncLog } from '@/types'
 
@@ -11,13 +11,6 @@ const providerLabels: Record<string, { label: string; color: string }> = {
   xero: { label: 'Xero', color: 'text-blue-400' },
   netsuite: { label: 'NetSuite', color: 'text-orange-400' },
   sage: { label: 'Sage', color: 'text-green-400' },
-}
-
-const syncStatusConfig: Record<string, { label: string; variant: 'success' | 'warning' | 'danger' | 'outline' }> = {
-  running: { label: 'Running', variant: 'warning' },
-  success: { label: 'Success', variant: 'success' },
-  partial: { label: 'Partial', variant: 'warning' },
-  error: { label: 'Error', variant: 'danger' },
 }
 
 export function IntegrationsPage() {
@@ -69,8 +62,15 @@ export function IntegrationsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <div className="space-y-4">
+        <div>
+          <div className="skeleton h-8 w-48 rounded-lg" />
+          <div className="skeleton h-4 w-64 rounded-lg mt-2" />
+        </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="skeleton h-48 rounded-xl" />
+          <div className="skeleton h-48 rounded-xl" />
+        </div>
       </div>
     )
   }
@@ -109,9 +109,7 @@ export function IntegrationsPage() {
                   </div>
                   {integration && (
                     <div className="flex items-center gap-2">
-                      <Badge variant={isConnected ? 'success' : 'outline'}>
-                        {isConnected ? 'Active' : 'Inactive'}
-                      </Badge>
+                      <StatusBadge status={isConnected ? 'active' : 'inactive'} />
                     </div>
                   )}
                 </div>
@@ -224,25 +222,23 @@ export function IntegrationsPage() {
             {syncLogs[selectedProvider].length === 0 ? (
               <p className="text-sm text-muted-foreground">No sync logs found.</p>
             ) : (
-              <div className="overflow-x-auto">
+              <div className="rounded-xl border overflow-hidden">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b text-left">
-                      <th className="p-3 text-sm font-medium text-muted-foreground">Entity</th>
-                      <th className="p-3 text-sm font-medium text-muted-foreground">Status</th>
-                      <th className="p-3 text-sm font-medium text-muted-foreground">Records</th>
-                      <th className="p-3 text-sm font-medium text-muted-foreground">Started</th>
-                      <th className="p-3 text-sm font-medium text-muted-foreground">Completed</th>
+                    <tr className="border-b bg-muted/50">
+                      <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Entity</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Records</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Started</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Completed</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="divide-y divide-border">
                     {syncLogs[selectedProvider].map((log) => (
-                      <tr key={log.id} className="border-b last:border-0">
+                      <tr key={log.id} className="hover:bg-accent/50 transition-colors">
                         <td className="p-3 text-sm">{log.entity_type}</td>
                         <td className="p-3">
-                          <Badge variant={syncStatusConfig[log.status]?.variant || 'outline'}>
-                            {syncStatusConfig[log.status]?.label || log.status}
-                          </Badge>
+                          <StatusBadge status={log.status} />
                         </td>
                         <td className="p-3 text-sm">{log.records_synced}</td>
                         <td className="p-3 text-sm">{new Date(log.started_at).toLocaleString()}</td>

@@ -17,18 +17,11 @@ import {
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/status-badge'
 import { Input } from '@/components/ui/input'
 import { scorecardApi } from '@/api/scorecards'
 import { cn } from '@/lib/utils'
 import type { ScorecardDetail, KpiEntry } from '@/types'
-
-const statusConfig: Record<string, { label: string; variant: 'outline' | 'default' | 'success' | 'warning' | 'danger' }> = {
-  draft: { label: 'Draft', variant: 'outline' },
-  in_review: { label: 'In Review', variant: 'warning' },
-  published: { label: 'Published', variant: 'success' },
-  archived: { label: 'Archived', variant: 'outline' },
-}
 
 const kpiStatusIcons: Record<string, React.ElementType> = {
   on_track: CheckCircle2,
@@ -115,8 +108,21 @@ export function ScorecardDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <div className="space-y-4">
+        <div className="flex items-center gap-4">
+          <div className="skeleton h-5 w-5 rounded" />
+          <div>
+            <div className="skeleton h-8 w-64 rounded-lg" />
+            <div className="skeleton h-4 w-48 rounded-lg mt-2" />
+          </div>
+        </div>
+        <div className="grid grid-cols-3 gap-6">
+          <div className="col-span-2 grid gap-4 md:grid-cols-2">
+            <div className="skeleton h-40 rounded-xl" />
+            <div className="skeleton h-40 rounded-xl" />
+          </div>
+          <div className="skeleton h-64 rounded-xl" />
+        </div>
       </div>
     )
   }
@@ -167,9 +173,7 @@ export function ScorecardDetailPage() {
             {scorecard.period_start} ― {scorecard.period_end}
           </p>
         </div>
-        <Badge variant={statusConfig[scorecard.status]?.variant || 'outline'}>
-          {statusConfig[scorecard.status]?.label || scorecard.status}
-        </Badge>
+        <StatusBadge status={scorecard.status} />
         <Button variant="outline" size="sm" onClick={() => setIsFullscreen(true)}>
           <Maximize2 className="w-4 h-4 mr-1" /> Meeting View
         </Button>
@@ -330,9 +334,7 @@ export function ScorecardDetailPage() {
                       <p className="text-xs text-muted-foreground mt-0.5">{ai.description}</p>
                     )}
                   </div>
-                  <Badge variant={ai.status === 'completed' ? 'success' : ai.status === 'in_progress' ? 'warning' : 'outline'}>
-                    {ai.status}
-                  </Badge>
+                  <StatusBadge status={ai.status} />
                 </div>
               ))}
               {scorecard.action_items.length === 0 && (

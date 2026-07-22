@@ -4,15 +4,9 @@ import { ArrowLeft, Pencil, Save } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/status-badge'
 import { apiFetch } from '@/api/client'
 import type { Client, ClientDashboard, TaskList } from '@/types'
-
-const statusConfig: Record<string, { label: string; variant: 'success' | 'warning' | 'outline' }> = {
-  active: { label: 'Active', variant: 'success' },
-  inactive: { label: 'Inactive', variant: 'outline' },
-  quarterly: { label: 'Quarterly', variant: 'warning' },
-}
 
 type Tab = 'overview' | 'tasks' | 'dashboard'
 
@@ -58,8 +52,14 @@ export function ClientDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <div className="space-y-4">
+        <div className="flex items-center gap-4">
+          <div className="skeleton h-5 w-5 rounded" />
+          <div className="skeleton h-8 w-64 rounded-lg flex-1" />
+          <div className="skeleton h-6 w-20 rounded-full" />
+        </div>
+        <div className="skeleton h-10 w-full rounded-xl" />
+        <div className="skeleton h-64 w-full rounded-xl" />
       </div>
     )
   }
@@ -75,9 +75,7 @@ export function ClientDetailPage() {
         <div className="flex-1">
           <h1 className="text-3xl font-bold tracking-tight">{client.name}</h1>
         </div>
-        <Badge variant={statusConfig[client.status]?.variant || 'outline'}>
-          {statusConfig[client.status]?.label || client.status}
-        </Badge>
+        <StatusBadge status={client.status} />
         <Link to={`/clients/${id}/close`}>
           <Button variant="outline" size="sm">Close Page</Button>
         </Link>
@@ -182,7 +180,7 @@ export function ClientDetailPage() {
                     className="flex items-center gap-3 p-3 rounded-lg border hover:border-primary/50 transition-colors"
                   >
                     <span className="font-medium">{tl.name}</span>
-                    {tl.is_template && <Badge variant="outline">Template</Badge>}
+                    {tl.is_template && <StatusBadge status="todo" label="Template" />}
                   </Link>
                 ))}
               </div>

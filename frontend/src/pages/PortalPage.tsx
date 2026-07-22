@@ -3,7 +3,7 @@ import { Send, MessageSquare, FileText, Palette, Upload } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/status-badge'
 import { apiFetch } from '@/api/client'
 import type { PortalMessage, PortalDocument, PortalBranding, Client } from '@/types'
 
@@ -77,8 +77,16 @@ export function PortalPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <div className="space-y-4">
+        <div>
+          <div className="skeleton h-8 w-48 rounded-lg" />
+          <div className="skeleton h-4 w-64 rounded-lg mt-2" />
+        </div>
+        <div className="skeleton h-10 w-full rounded-xl" />
+        <div className="grid grid-cols-2 gap-6">
+          <div className="skeleton h-64 rounded-xl" />
+          <div className="skeleton h-64 rounded-xl" />
+        </div>
       </div>
     )
   }
@@ -129,8 +137,8 @@ export function PortalPage() {
                       onClick={() => handleMarkRead(m.id)}
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <Badge variant="outline" className="text-xs">{m.sender_type}</Badge>
-                        {!m.is_read && <Badge variant="success" className="text-xs">New</Badge>}
+                        <StatusBadge status={m.sender_type === 'firm' ? 'active' : 'in_progress'} label={m.sender_type === 'firm' ? 'Firm' : 'Client'} />
+                        {!m.is_read && <StatusBadge status="pending" label="New" />}
                       </div>
                       <p className="text-sm">{m.content}</p>
                       <p className="text-xs text-muted-foreground mt-1">

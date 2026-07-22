@@ -1,9 +1,9 @@
 import * as React from 'react'
 import { apiFetch } from '@/api/client'
-import type { GstRegistration, HsnSacCode, GstInvoice, GstReturn, GstInvoiceLine } from '@/types'
+import type { GstRegistration, HsnSacCode, GstInvoice, GstReturn } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/status-badge'
 import { Input } from '@/components/ui/input'
 import { IndianRupee } from 'lucide-react'
 
@@ -44,20 +44,7 @@ export function GstPage() {
     }
   }
 
-  function getStatusBadge(status: string) {
-    const variants: Record<string, string> = {
-      active: 'bg-green-100 text-green-800',
-      inactive: 'bg-gray-100 text-gray-800',
-      draft: 'bg-yellow-100 text-yellow-800',
-      final: 'bg-blue-100 text-blue-800',
-      cancelled: 'bg-red-100 text-red-800',
-      pending: 'bg-yellow-100 text-yellow-800',
-      in_progress: 'bg-blue-100 text-blue-800',
-      filed: 'bg-green-100 text-green-800',
-      error: 'bg-red-100 text-red-800',
-    }
-    return variants[status] || 'bg-gray-100 text-gray-800'
-  }
+
 
   const tabs: { key: Tab; label: string }[] = [
     { key: 'registrations', label: 'Registrations' },
@@ -73,7 +60,7 @@ export function GstPage() {
           <IndianRupee className="w-6 h-6" />
           <h1 className="text-2xl font-bold">GST Compliance</h1>
         </div>
-        <Button onClick={() => setShowForm(true)}>
+        <Button size="sm" onClick={() => setShowForm(true)}>
           {activeTab === 'registrations' && 'Add GSTIN'}
           {activeTab === 'hsn-sac' && 'Add HSN/SAC'}
           {activeTab === 'invoices' && 'Create Invoice'}
@@ -100,7 +87,10 @@ export function GstPage() {
       {activeTab === 'registrations' && (
         <div className="space-y-4">
           {loading ? (
-            <p className="text-muted-foreground">Loading...</p>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="skeleton h-48 rounded-xl" />
+              <div className="skeleton h-48 rounded-xl" />
+            </div>
           ) : registrations.length === 0 ? (
             <Card>
               <CardContent className="py-8 text-center text-muted-foreground">
@@ -113,7 +103,7 @@ export function GstPage() {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg font-mono">{reg.gstin}</CardTitle>
-                    <Badge className={getStatusBadge(reg.status)}>{reg.status}</Badge>
+                    <StatusBadge status={reg.status} />
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -161,7 +151,11 @@ export function GstPage() {
       {activeTab === 'hsn-sac' && (
         <div className="space-y-4">
           {loading ? (
-            <p className="text-muted-foreground">Loading...</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="skeleton h-32 rounded-xl" />
+              <div className="skeleton h-32 rounded-xl" />
+              <div className="skeleton h-32 rounded-xl" />
+            </div>
           ) : hsnCodes.length === 0 ? (
             <Card>
               <CardContent className="py-8 text-center text-muted-foreground">
@@ -175,19 +169,15 @@ export function GstPage() {
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-lg font-mono">{code.code}</CardTitle>
-                      <Badge variant="outline">{code.type.toUpperCase()}</Badge>
+                      <StatusBadge status="todo" label={code.type.toUpperCase()} />
                     </div>
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm mb-2">{code.description}</p>
                     <div className="flex gap-2 text-sm">
-                      <Badge className={code.gst_rate === 0 ? 'bg-gray-100' : 'bg-blue-100 text-blue-800'}>
-                        {code.gst_rate}% GST
-                      </Badge>
+                      <StatusBadge status={code.gst_rate === 0 ? 'inactive' : 'active'} label={`${code.gst_rate}% GST`} />
                       {code.cess_rate > 0 && (
-                        <Badge className="bg-orange-100 text-orange-800">
-                          {code.cess_rate}% Cess
-                        </Badge>
+                        <StatusBadge status="pending" label={`${code.cess_rate}% Cess`} />
                       )}
                     </div>
                     {code.chapter && (
@@ -204,7 +194,7 @@ export function GstPage() {
       {activeTab === 'invoices' && (
         <div className="space-y-4">
           {loading ? (
-            <p className="text-muted-foreground">Loading...</p>
+            <div className="skeleton h-64 w-full rounded-xl" />
           ) : invoices.length === 0 ? (
             <Card>
               <CardContent className="py-8 text-center text-muted-foreground">
@@ -212,48 +202,46 @@ export function GstPage() {
               </CardContent>
             </Card>
           ) : (
-            <Card>
-              <CardContent className="p-0">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b text-left">
-                      <th className="p-3 text-xs font-medium text-muted-foreground">Invoice #</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">Date</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">Customer</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">Taxable</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">GST</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">Total</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">Status</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">IRN</th>
+            <div className="rounded-xl border overflow-hidden">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b bg-muted/50">
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Invoice #</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Customer</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Taxable</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">GST</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Total</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">IRN</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {invoices.map((inv) => (
+                    <tr key={inv.id} className="hover:bg-accent/50 transition-colors">
+                      <td className="p-3 font-mono text-sm">{inv.invoice_number}</td>
+                      <td className="p-3 text-sm">{inv.invoice_date}</td>
+                      <td className="p-3 text-sm">{inv.customer_name}</td>
+                      <td className="p-3 text-sm">₹{inv.total_taxable_value.toLocaleString()}</td>
+                      <td className="p-3 text-sm">
+                        ₹{(inv.total_cgst + inv.total_sgst + inv.total_igst).toLocaleString()}
+                      </td>
+                      <td className="p-3 text-sm font-medium">₹{inv.total_invoice_value.toLocaleString()}</td>
+                      <td className="p-3">
+                        <StatusBadge status={inv.status} />
+                      </td>
+                      <td className="p-3 text-xs">
+                        {inv.irn_status === 'generated' ? (
+                          <StatusBadge status="filed" label="IRN Done" />
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {invoices.map((inv) => (
-                      <tr key={inv.id} className="border-b last:border-0 hover:bg-accent/50">
-                        <td className="p-3 font-mono text-sm">{inv.invoice_number}</td>
-                        <td className="p-3 text-sm">{inv.invoice_date}</td>
-                        <td className="p-3 text-sm">{inv.customer_name}</td>
-                        <td className="p-3 text-sm">₹{inv.total_taxable_value.toLocaleString()}</td>
-                        <td className="p-3 text-sm">
-                          ₹{(inv.total_cgst + inv.total_sgst + inv.total_igst).toLocaleString()}
-                        </td>
-                        <td className="p-3 text-sm font-medium">₹{inv.total_invoice_value.toLocaleString()}</td>
-                        <td className="p-3">
-                          <Badge className={getStatusBadge(inv.status)}>{inv.status}</Badge>
-                        </td>
-                        <td className="p-3 text-xs">
-                          {inv.irn_status === 'generated' ? (
-                            <Badge className="bg-green-100 text-green-800">IRN Done</Badge>
-                          ) : (
-                            <span className="text-muted-foreground">-</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </CardContent>
-            </Card>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       )}
@@ -261,7 +249,7 @@ export function GstPage() {
       {activeTab === 'returns' && (
         <div className="space-y-4">
           {loading ? (
-            <p className="text-muted-foreground">Loading...</p>
+            <div className="skeleton h-64 w-full rounded-xl" />
           ) : returns.length === 0 ? (
             <Card>
               <CardContent className="py-8 text-center text-muted-foreground">
@@ -269,38 +257,36 @@ export function GstPage() {
               </CardContent>
             </Card>
           ) : (
-            <Card>
-              <CardContent className="p-0">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b text-left">
-                      <th className="p-3 text-xs font-medium text-muted-foreground">Return Type</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">Period</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">FY</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">Due Date</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">Net Payable</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">Status</th>
-                      <th className="p-3 text-xs font-medium text-muted-foreground">ARN</th>
+            <div className="rounded-xl border overflow-hidden">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b bg-muted/50">
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Return Type</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Period</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">FY</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Due Date</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Net Payable</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
+                    <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">ARN</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {returns.map((ret) => (
+                    <tr key={ret.id} className="hover:bg-accent/50 transition-colors">
+                      <td className="p-3 text-sm font-medium">{ret.return_type}</td>
+                      <td className="p-3 text-sm">{ret.return_period}</td>
+                      <td className="p-3 text-sm">{ret.financial_year}</td>
+                      <td className="p-3 text-sm">{ret.due_date}</td>
+                      <td className="p-3 text-sm">₹{ret.net_payable.toLocaleString()}</td>
+                      <td className="p-3">
+                        <StatusBadge status={ret.status} />
+                      </td>
+                      <td className="p-3 text-xs font-mono">{ret.arn || '-'}</td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {returns.map((ret) => (
-                      <tr key={ret.id} className="border-b last:border-0 hover:bg-accent/50">
-                        <td className="p-3 text-sm font-medium">{ret.return_type}</td>
-                        <td className="p-3 text-sm">{ret.return_period}</td>
-                        <td className="p-3 text-sm">{ret.financial_year}</td>
-                        <td className="p-3 text-sm">{ret.due_date}</td>
-                        <td className="p-3 text-sm">₹{ret.net_payable.toLocaleString()}</td>
-                        <td className="p-3">
-                          <Badge className={getStatusBadge(ret.status)}>{ret.status}</Badge>
-                        </td>
-                        <td className="p-3 text-xs font-mono">{ret.arn || '-'}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </CardContent>
-            </Card>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       )}

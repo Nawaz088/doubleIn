@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Check, Trash2 } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { ArrowLeft, Check } from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/status-badge'
 import { apiFetch } from '@/api/client'
 import type { ReviewFinding } from '@/types'
 
-const findingStatusConfig: Record<string, { label: string; variant: 'success' | 'outline' | 'warning' }> = {
-  open: { label: 'Open', variant: 'warning' },
-  resolved: { label: 'Resolved', variant: 'success' },
-  ignored: { label: 'Ignored', variant: 'outline' },
+const findingLabels: Record<string, string> = {
+  open: 'Open',
+  resolved: 'Resolved',
+  ignored: 'Ignored',
 }
 
 export function FileReviewDetailPage() {
@@ -46,8 +46,15 @@ export function FileReviewDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <div className="space-y-4">
+        <div className="flex items-center gap-4">
+          <div className="skeleton h-5 w-5 rounded" />
+          <div>
+            <div className="skeleton h-8 w-64 rounded-lg" />
+            <div className="skeleton h-4 w-32 rounded-lg mt-2" />
+          </div>
+        </div>
+        <div className="skeleton h-64 w-full rounded-xl" />
       </div>
     )
   }
@@ -73,52 +80,48 @@ export function FileReviewDetailPage() {
           <p className="text-muted-foreground">No issues found in this review report.</p>
         </Card>
       ) : (
-        <Card>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b text-left">
-                  <th className="p-3 text-sm font-medium text-muted-foreground">Transaction</th>
-                  <th className="p-3 text-sm font-medium text-muted-foreground">Date</th>
-                  <th className="p-3 text-sm font-medium text-muted-foreground">Amount</th>
-                  <th className="p-3 text-sm font-medium text-muted-foreground">Issue</th>
-                  <th className="p-3 text-sm font-medium text-muted-foreground">Suggested Action</th>
-                  <th className="p-3 text-sm font-medium text-muted-foreground">Status</th>
-                  <th className="p-3 text-sm font-medium text-muted-foreground">Actions</th>
+        <div className="rounded-xl border overflow-hidden">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b bg-muted/50">
+                <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Transaction</th>
+                <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</th>
+                <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Amount</th>
+                <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Issue</th>
+                <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Suggested Action</th>
+                <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
+                <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {findings.map((f) => (
+                <tr key={f.id} className="hover:bg-accent/50 transition-colors">
+                  <td className="p-3 text-sm font-mono text-xs truncate max-w-[120px]">
+                    {f.transaction_external_id}
+                  </td>
+                  <td className="p-3 text-sm">{new Date(f.transaction_date).toLocaleDateString()}</td>
+                  <td className="p-3 text-sm font-mono">
+                    ${f.transaction_amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                  </td>
+                  <td className="p-3 text-sm max-w-[200px] truncate">{f.issue}</td>
+                  <td className="p-3 text-sm text-muted-foreground max-w-[200px] truncate">
+                    {f.suggested_action || '—'}
+                  </td>
+                  <td className="p-3">
+                    <StatusBadge status={f.status} label={findingLabels[f.status]} />
+                  </td>
+                  <td className="p-3">
+                    {f.status === 'open' && (
+                      <Button variant="ghost" size="sm" onClick={() => handleResolve(f.id)}>
+                        <Check className="w-4 h-4 mr-1" /> Resolve
+                      </Button>
+                    )}
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {findings.map((f) => (
-                  <tr key={f.id} className="border-b last:border-0 hover:bg-muted/50 transition-colors">
-                    <td className="p-3 text-sm font-mono text-xs truncate max-w-[120px]">
-                      {f.transaction_external_id}
-                    </td>
-                    <td className="p-3 text-sm">{new Date(f.transaction_date).toLocaleDateString()}</td>
-                    <td className="p-3 text-sm font-mono">
-                      ${f.transaction_amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                    </td>
-                    <td className="p-3 text-sm max-w-[200px] truncate">{f.issue}</td>
-                    <td className="p-3 text-sm text-muted-foreground max-w-[200px] truncate">
-                      {f.suggested_action || '—'}
-                    </td>
-                    <td className="p-3">
-                      <Badge variant={findingStatusConfig[f.status]?.variant || 'outline'}>
-                        {findingStatusConfig[f.status]?.label || f.status}
-                      </Badge>
-                    </td>
-                    <td className="p-3">
-                      {f.status === 'open' && (
-                        <Button variant="ghost" size="sm" onClick={() => handleResolve(f.id)}>
-                          <Check className="w-4 h-4 mr-1" /> Resolve
-                        </Button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Card>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   )

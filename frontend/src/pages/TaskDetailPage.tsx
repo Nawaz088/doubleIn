@@ -7,17 +7,10 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/status-badge'
 import { apiFetch } from '@/api/client'
 import { cn } from '@/lib/utils'
 import type { TaskDetail, TaskComment } from '@/types'
-
-const statusConfig: Record<string, { label: string; variant: 'success' | 'warning' | 'outline' | 'danger' }> = {
-  todo: { label: 'To Do', variant: 'outline' },
-  in_progress: { label: 'In Progress', variant: 'warning' },
-  review: { label: 'Review', variant: 'danger' },
-  done: { label: 'Done', variant: 'success' },
-}
 
 const priorityColors: Record<string, string> = {
   low: 'text-muted-foreground',
@@ -69,8 +62,19 @@ export function TaskDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <div className="space-y-4">
+        <div className="flex items-center gap-4">
+          <div className="skeleton h-5 w-5 rounded" />
+          <div className="skeleton h-8 w-64 rounded-lg flex-1" />
+          <div className="skeleton h-6 w-24 rounded-full" />
+        </div>
+        <div className="grid grid-cols-3 gap-6">
+          <div className="col-span-2 space-y-4">
+            <div className="skeleton h-32 rounded-xl" />
+            <div className="skeleton h-48 rounded-xl" />
+          </div>
+          <div className="skeleton h-64 rounded-xl" />
+        </div>
       </div>
     )
   }
@@ -86,9 +90,7 @@ export function TaskDetailPage() {
         <div className="flex-1">
           <h1 className="text-3xl font-bold tracking-tight">{task.name}</h1>
         </div>
-        <Badge variant={statusConfig[task.status]?.variant || 'outline'}>
-          {statusConfig[task.status]?.label || task.status}
-        </Badge>
+        <StatusBadge status={task.status} />
       </div>
 
       <div className="grid grid-cols-3 gap-6">
@@ -234,7 +236,7 @@ export function TaskDetailPage() {
                   </p>
                   <div className="flex gap-1 flex-wrap">
                     {task.tags.map((tag) => (
-                      <Badge key={tag} variant="secondary">{tag}</Badge>
+                      <StatusBadge key={tag} status="todo" label={tag} />
                     ))}
                   </div>
                 </div>

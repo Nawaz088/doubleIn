@@ -3,16 +3,9 @@ import { Plus, FileText, Send, Trash2, Calendar } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/status-badge'
 import { apiFetch } from '@/api/client'
 import type { JournalEntry, Client } from '@/types'
-
-const statusConfig: Record<string, { label: string; variant: 'success' | 'warning' | 'outline' | 'danger' }> = {
-  draft: { label: 'Draft', variant: 'outline' },
-  ready: { label: 'Ready', variant: 'warning' },
-  posted: { label: 'Posted', variant: 'success' },
-  error: { label: 'Error', variant: 'danger' },
-}
 
 const sourceConfig: Record<string, string> = {
   manual: 'Manual',
@@ -106,8 +99,15 @@ export function JournalEntriesPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="skeleton h-8 w-48 rounded-lg" />
+            <div className="skeleton h-4 w-64 rounded-lg mt-2" />
+          </div>
+          <div className="skeleton h-9 w-28 rounded-lg" />
+        </div>
+        <div className="skeleton h-64 w-full rounded-xl" />
       </div>
     )
   }
@@ -138,49 +138,45 @@ export function JournalEntriesPage() {
           </Button>
         </Card>
       ) : (
-        <Card>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b text-left">
-                  <th className="p-3 text-sm font-medium text-muted-foreground">Date</th>
-                  <th className="p-3 text-sm font-medium text-muted-foreground">Description</th>
-                  <th className="p-3 text-sm font-medium text-muted-foreground">Source</th>
-                  <th className="p-3 text-sm font-medium text-muted-foreground">Status</th>
-                  <th className="p-3 text-sm font-medium text-muted-foreground">Actions</th>
+        <div className="rounded-xl border overflow-hidden">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b bg-muted/50">
+                <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</th>
+                <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Description</th>
+                <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Source</th>
+                <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
+                <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {entries.map((je) => (
+                <tr key={je.id} className="hover:bg-accent/50 transition-colors">
+                  <td className="p-3 text-sm">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
+                      {new Date(je.date).toLocaleDateString()}
+                    </div>
+                  </td>
+                  <td className="p-3 text-sm max-w-[300px] truncate">{je.description}</td>
+                  <td className="p-3 text-sm text-muted-foreground">{sourceConfig[je.source] || je.source}</td>
+                  <td className="p-3">
+                    <StatusBadge status={je.status} />
+                  </td>
+                  <td className="p-3">
+                    <div className="flex items-center gap-1">
+                      {je.status === 'draft' && (
+                        <Button variant="ghost" size="sm" onClick={() => handlePost(je.id)}>
+                          <Send className="w-4 h-4 mr-1" /> Post
+                        </Button>
+                      )}
+                    </div>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {entries.map((je) => (
-                  <tr key={je.id} className="border-b last:border-0 hover:bg-muted/50 transition-colors">
-                    <td className="p-3 text-sm">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
-                        {new Date(je.date).toLocaleDateString()}
-                      </div>
-                    </td>
-                    <td className="p-3 text-sm max-w-[300px] truncate">{je.description}</td>
-                    <td className="p-3 text-sm text-muted-foreground">{sourceConfig[je.source] || je.source}</td>
-                    <td className="p-3">
-                      <Badge variant={statusConfig[je.status]?.variant || 'outline'}>
-                        {statusConfig[je.status]?.label || je.status}
-                      </Badge>
-                    </td>
-                    <td className="p-3">
-                      <div className="flex items-center gap-1">
-                        {je.status === 'draft' && (
-                          <Button variant="ghost" size="sm" onClick={() => handlePost(je.id)}>
-                            <Send className="w-4 h-4 mr-1" /> Post
-                          </Button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Card>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {showForm && (

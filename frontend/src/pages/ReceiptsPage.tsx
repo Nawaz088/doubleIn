@@ -3,16 +3,9 @@ import { Upload, FileImage, Search, ExternalLink } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/status-badge'
 import { apiFetch } from '@/api/client'
 import type { Receipt, Client } from '@/types'
-
-const statusConfig: Record<string, { label: string; variant: 'success' | 'warning' | 'outline' }> = {
-  processing: { label: 'Processing', variant: 'warning' },
-  ready: { label: 'Ready', variant: 'outline' },
-  matched: { label: 'Matched', variant: 'success' },
-  posted: { label: 'Posted', variant: 'success' },
-}
 
 const methodLabels: Record<string, string> = {
   portal: 'Portal',
@@ -70,8 +63,20 @@ export function ReceiptsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="skeleton h-8 w-48 rounded-lg" />
+            <div className="skeleton h-4 w-64 rounded-lg mt-2" />
+          </div>
+          <div className="skeleton h-9 w-32 rounded-lg" />
+        </div>
+        <div className="skeleton h-10 w-80 rounded-xl" />
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="skeleton h-40 rounded-xl" />
+          <div className="skeleton h-40 rounded-xl" />
+          <div className="skeleton h-40 rounded-xl" />
+        </div>
       </div>
     )
   }
@@ -115,9 +120,7 @@ export function ReceiptsPage() {
               <CardContent className="p-6 space-y-3">
                 <div className="flex items-start justify-between">
                   <FileImage className="w-8 h-8 text-muted-foreground" />
-                  <Badge variant={statusConfig[r.status]?.variant || 'outline'}>
-                    {statusConfig[r.status]?.label || r.status}
-                  </Badge>
+                  <StatusBadge status={r.status} />
                 </div>
                 <div>
                   <h3 className="font-medium text-sm truncate">{r.file_name}</h3>
@@ -184,9 +187,7 @@ export function ReceiptsPage() {
             </div>
             <div>
               <p className="text-xs text-muted-foreground mb-1">Status</p>
-              <Badge variant={statusConfig[selectedReceipt.status]?.variant || 'outline'}>
-                {statusConfig[selectedReceipt.status]?.label || selectedReceipt.status}
-              </Badge>
+              <StatusBadge status={selectedReceipt.status} />
             </div>
             <div>
               <p className="text-xs text-muted-foreground mb-1">Upload Method</p>

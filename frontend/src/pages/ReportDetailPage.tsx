@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, Send, Plus, FileDown } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/status-badge'
 import { apiFetch } from '@/api/client'
 import type { ReportPackage, ReportSection } from '@/types'
 
@@ -19,11 +19,6 @@ const sectionLabels: Record<string, string> = {
   top_customers: 'Top Customers',
   top_vendors: 'Top Vendors',
   notes: 'Notes',
-}
-
-const statusConfig: Record<string, { label: string; variant: 'success' | 'outline' }> = {
-  draft: { label: 'Draft', variant: 'outline' },
-  published: { label: 'Published', variant: 'success' },
 }
 
 export function ReportDetailPage() {
@@ -65,8 +60,16 @@ export function ReportDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <div className="space-y-4">
+        <div className="flex items-center gap-4">
+          <div className="skeleton h-5 w-5 rounded" />
+          <div>
+            <div className="skeleton h-8 w-64 rounded-lg" />
+            <div className="skeleton h-4 w-48 rounded-lg mt-2" />
+          </div>
+        </div>
+        <div className="skeleton h-24 w-full rounded-xl" />
+        <div className="skeleton h-48 w-full rounded-xl" />
       </div>
     )
   }
@@ -87,9 +90,7 @@ export function ReportDetailPage() {
             {report.period_start} ― {report.period_end}
           </p>
         </div>
-        <Badge variant={statusConfig[report.status]?.variant || 'outline'}>
-          {statusConfig[report.status]?.label || report.status}
-        </Badge>
+        <StatusBadge status={report.status} />
         {report.status === 'draft' && (
           <Button size="sm" onClick={handlePublish}>
             <Send className="w-4 h-4 mr-1" /> Publish

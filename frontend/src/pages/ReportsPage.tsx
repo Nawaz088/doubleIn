@@ -4,14 +4,9 @@ import { Plus, BarChart3, Calendar } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/status-badge'
 import { apiFetch } from '@/api/client'
 import type { ReportPackage, Client } from '@/types'
-
-const statusConfig: Record<string, { label: string; variant: 'success' | 'outline' }> = {
-  draft: { label: 'Draft', variant: 'outline' },
-  published: { label: 'Published', variant: 'success' },
-}
 
 export function ReportsPage() {
   const [reports, setReports] = useState<ReportPackage[]>([])
@@ -54,8 +49,19 @@ export function ReportsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="skeleton h-8 w-48 rounded-lg" />
+            <div className="skeleton h-4 w-64 rounded-lg mt-2" />
+          </div>
+          <div className="skeleton h-9 w-28 rounded-lg" />
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="skeleton h-32 rounded-xl" />
+          <div className="skeleton h-32 rounded-xl" />
+          <div className="skeleton h-32 rounded-xl" />
+        </div>
       </div>
     )
   }
@@ -93,9 +99,7 @@ export function ReportsPage() {
                 <CardContent className="p-6 space-y-3">
                   <div className="flex items-start justify-between">
                     <h3 className="font-semibold text-lg">{r.name}</h3>
-                    <Badge variant={statusConfig[r.status]?.variant || 'outline'}>
-                      {statusConfig[r.status]?.label || r.status}
-                    </Badge>
+                    <StatusBadge status={r.status} />
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Calendar className="w-3.5 h-3.5" />

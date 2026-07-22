@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, FileSearch, Search, X } from 'lucide-react'
+import { Plus, FileSearch } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/status-badge'
 import { apiFetch } from '@/api/client'
 import type { ReviewReport, Client } from '@/types'
 
@@ -61,8 +61,18 @@ export function FileReviewPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="skeleton h-8 w-48 rounded-lg" />
+            <div className="skeleton h-4 w-64 rounded-lg mt-2" />
+          </div>
+          <div className="skeleton h-9 w-28 rounded-lg" />
+        </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="skeleton h-32 rounded-xl" />
+          <div className="skeleton h-32 rounded-xl" />
+        </div>
       </div>
     )
   }
@@ -100,9 +110,7 @@ export function FileReviewPage() {
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between mb-3">
                     <h3 className="font-semibold">{r.name}</h3>
-                    <Badge variant={r.is_active ? 'success' : 'outline'}>
-                      {r.is_active ? 'Active' : 'Inactive'}
-                    </Badge>
+                    <StatusBadge status={r.is_active ? 'active' : 'inactive'} />
                   </div>
                   <p className="text-sm text-muted-foreground">
                     {reportTypeLabels[r.report_type] || r.report_type}

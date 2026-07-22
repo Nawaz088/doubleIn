@@ -3,7 +3,7 @@ import { Plus, FileClock, Calendar, CircleDollarSign } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/status-badge'
 import { apiFetch } from '@/api/client'
 import type { AccrualSchedule, AccrualScheduleDetail, AccrualEntry, Client } from '@/types'
 
@@ -12,12 +12,6 @@ const typeLabels: Record<string, string> = {
   fixed_asset: 'Fixed Asset',
   accrued_expense: 'Accrued Expense',
   deferred_revenue: 'Deferred Revenue',
-}
-
-const statusConfig: Record<string, { label: string; variant: 'success' | 'warning' | 'outline' }> = {
-  active: { label: 'Active', variant: 'success' },
-  completed: { label: 'Completed', variant: 'outline' },
-  paused: { label: 'Paused', variant: 'warning' },
 }
 
 export function AccrualsPage() {
@@ -77,8 +71,16 @@ export function AccrualsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="skeleton h-8 w-48 rounded-lg" />
+            <div className="skeleton h-4 w-64 rounded-lg mt-2" />
+          </div>
+          <div className="skeleton h-9 w-32 rounded-lg" />
+        </div>
+        <div className="skeleton h-24 w-full rounded-xl" />
+        <div className="skeleton h-48 w-full rounded-xl" />
       </div>
     )
   }
@@ -92,9 +94,7 @@ export function AccrualsPage() {
             <h1 className="text-3xl font-bold tracking-tight">{selectedSchedule.name}</h1>
             <p className="text-muted-foreground">{typeLabels[selectedSchedule.type] || selectedSchedule.type}</p>
           </div>
-          <Badge variant={statusConfig[selectedSchedule.status]?.variant || 'outline'}>
-            {statusConfig[selectedSchedule.status]?.label || selectedSchedule.status}
-          </Badge>
+          <StatusBadge status={selectedSchedule.status} />
           <Button size="sm" onClick={() => handleGenerateEntries(selectedSchedule.id)}>
             <Plus className="w-4 h-4 mr-1" /> Generate Entries
           </Button>
@@ -127,27 +127,25 @@ export function AccrualsPage() {
             {selectedSchedule.entries.length === 0 ? (
               <p className="text-sm text-muted-foreground">No entries yet. Click "Generate Entries" to create them.</p>
             ) : (
-              <div className="overflow-x-auto">
+              <div className="rounded-xl border overflow-hidden">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b text-left">
-                      <th className="p-3 text-sm font-medium text-muted-foreground">Period</th>
-                      <th className="p-3 text-sm font-medium text-muted-foreground">Amount</th>
-                      <th className="p-3 text-sm font-medium text-muted-foreground">Status</th>
-                      <th className="p-3 text-sm font-medium text-muted-foreground">Posted</th>
+                    <tr className="border-b bg-muted/50">
+                      <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Period</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Amount</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Posted</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="divide-y divide-border">
                     {selectedSchedule.entries.map((entry: AccrualEntry) => (
-                      <tr key={entry.id} className="border-b last:border-0">
+                      <tr key={entry.id} className="hover:bg-accent/50 transition-colors">
                         <td className="p-3 text-sm">{new Date(entry.period_date).toLocaleDateString()}</td>
                         <td className="p-3 text-sm font-mono">
                           ${entry.recognized_amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                         </td>
                         <td className="p-3">
-                          <Badge variant={entry.status === 'posted' ? 'success' : 'outline'}>
-                            {entry.status}
-                          </Badge>
+                          <StatusBadge status={entry.status} />
                         </td>
                         <td className="p-3 text-sm text-muted-foreground">
                           {entry.posted_at ? new Date(entry.posted_at).toLocaleDateString() : '—'}
@@ -212,9 +210,7 @@ export function AccrualsPage() {
                     {new Date(s.start_date).toLocaleDateString()}
                     {s.end_date && ` — ${new Date(s.end_date).toLocaleDateString()}`}
                   </span>
-                  <Badge variant={statusConfig[s.status]?.variant || 'outline'}>
-                    {statusConfig[s.status]?.label || s.status}
-                  </Badge>
+                  <StatusBadge status={s.status} />
                 </div>
               </CardContent>
             </Card>
