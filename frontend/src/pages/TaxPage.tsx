@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
-import { Plus, FileText, Calendar, ClipboardList, FileCheck, User } from 'lucide-react'
+import { Plus, FileText, Calendar, ClipboardList, FileCheck, User, IndianRupee, Building2, AlertTriangle } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { apiFetch } from '@/api/client'
-import type { TaxReturn, TaxOrganizer, Client } from '@/types'
+import type { TaxReturn, TaxOrganizer, Client, ItrFiling, McaFiling, AdvanceTaxInstallment } from '@/types'
 
 const returnStatusConfig: Record<string, { label: string; variant: 'success' | 'warning' | 'outline' | 'danger' }> = {
   draft: { label: 'Draft', variant: 'outline' },
@@ -24,9 +24,12 @@ const organizerStatusConfig: Record<string, { label: string; variant: 'success' 
 export function TaxPage() {
   const [returns, setReturns] = useState<TaxReturn[]>([])
   const [organizers, setOrganizers] = useState<TaxOrganizer[]>([])
+  const [itrFilings, setItrFilings] = useState<ItrFiling[]>([])
+  const [mcaFilings, setMcaFilings] = useState<McaFiling[]>([])
+  const [advanceTax, setAdvanceTax] = useState<AdvanceTaxInstallment[]>([])
   const [clients, setClients] = useState<Client[]>([])
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<'returns' | 'organizers' | 'filings'>('returns')
+  const [activeTab, setActiveTab] = useState<'returns' | 'organizers' | 'filings' | 'itr' | 'mca' | 'advance-tax'>('returns')
   const [showReturnModal, setShowReturnModal] = useState(false)
   const [showOrganizerModal, setShowOrganizerModal] = useState(false)
 
@@ -45,14 +48,20 @@ export function TaxPage() {
   const load = async () => {
     setLoading(true)
     try {
-      const [r, o, c] = await Promise.all([
+      const [r, o, c, itr, mca, at] = await Promise.all([
         apiFetch<TaxReturn[]>('/tax/returns'),
         apiFetch<TaxOrganizer[]>('/tax/organizers'),
         apiFetch<Client[]>('/clients/'),
+        apiFetch<ItrFiling[]>('/itr/filings'),
+        apiFetch<McaFiling[]>('/itr/mca'),
+        apiFetch<AdvanceTaxInstallment[]>('/itr/advance-tax'),
       ])
       setReturns(r)
       setOrganizers(o)
       setClients(c)
+      setItrFilings(itr)
+      setMcaFilings(mca)
+      setAdvanceTax(at)
     } catch {} finally {
       setLoading(false)
     }
@@ -99,24 +108,35 @@ export function TaxPage() {
         </div>
       </div>
 
-      <div className="flex gap-1 border-b">
-        {(['returns', 'organizers', 'filings'] as const).map((tab) => {
+      <div className="flex gap-1 border-b overflow-x-auto">
+        {(['returns', 'organizers', 'filings', 'itr', 'mca', 'advance-tax'] as const).map((tab) => {
           const icons: Record<string, React.ElementType> = {
             returns: FileText,
             organizers: ClipboardList,
             filings: FileCheck,
+            itr: IndianRupee,
+            mca: Building2,
+            'advance-tax': Calendar,
+          }
+          const labels: Record<string, string> = {
+            returns: 'Tax Returns',
+            organizers: 'Organizers',
+            filings: 'Signatures',
+            itr: 'ITR Filings',
+            mca: 'MCA/ROC',
+            'advance-tax': 'Advance Tax',
           }
           const Icon = icons[tab]
           return (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+              className={`flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 transition-colors shrink-0 ${
                 activeTab === tab ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'
               }`}
             >
               <Icon className="w-4 h-4" />
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              {labels[tab]}
             </button>
           )
         })}
@@ -220,6 +240,161 @@ export function TaxPage() {
           <h3 className="text-lg font-medium mb-2">Filing History</h3>
           <p className="text-muted-foreground">Filing history will appear here once returns are filed.</p>
         </Card>
+      )}
+
+      {activeTab === 'itr' && (
+        <div className="space-y-4">
+          <div className="flex justify-end">
+            <Button size="sm" className="gap-2">
+              <Plus className="w-4 h-4" />
+              New ITR Filing
+            </Button>
+          </div>
+          {itrFilings.length === 0 ? (
+            <Card className="p-12 text-center">
+              <IndianRupee className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium mb-2">No ITR filings</h3>
+              <p className="text-muted-foreground">Track ITR-1 to ITR-7 filings for your clients.</p>
+            </Card>
+          ) : (
+            <Card>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b text-left">
+                      <th className="p-3 text-xs font-medium text-muted-foreground">Form</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground">FY</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground">AY</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground">Income</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground">Tax</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground">Refund</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground">Status</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground">Ack</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {itrFilings.map((f) => (
+                      <tr key={f.id} className="border-b last:border-0 hover:bg-muted/50">
+                        <td className="p-3 text-sm font-medium">{f.form_type}</td>
+                        <td className="p-3 text-sm">{f.financial_year}</td>
+                        <td className="p-3 text-sm">{f.assessment_year}</td>
+                        <td className="p-3 text-sm">₹{f.gross_income.toLocaleString()}</td>
+                        <td className="p-3 text-sm">₹{f.total_tax.toLocaleString()}</td>
+                        <td className="p-3 text-sm text-green-600">₹{f.refund_amount.toLocaleString()}</td>
+                        <td className="p-3">
+                          <Badge variant={returnStatusConfig[f.status]?.variant || 'outline'}>
+                            {returnStatusConfig[f.status]?.label || f.status}
+                          </Badge>
+                        </td>
+                        <td className="p-3 text-xs font-mono">{f.itr_acknowledgement || '-'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          )}
+        </div>
+      )}
+
+      {activeTab === 'mca' && (
+        <div className="space-y-4">
+          <div className="flex justify-end">
+            <Button size="sm" className="gap-2">
+              <Plus className="w-4 h-4" />
+              New MCA Filing
+            </Button>
+          </div>
+          {mcaFilings.length === 0 ? (
+            <Card className="p-12 text-center">
+              <Building2 className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium mb-2">No MCA/ROC filings</h3>
+              <p className="text-muted-foreground">Track AOC-4, MGT-7, and other MCA filings.</p>
+            </Card>
+          ) : (
+            <Card>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b text-left">
+                      <th className="p-3 text-xs font-medium text-muted-foreground">Form</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground">Company</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground">FY</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground">Due</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground">Filed</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground">Status</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground">SRN</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {mcaFilings.map((f) => (
+                      <tr key={f.id} className="border-b last:border-0 hover:bg-muted/50">
+                        <td className="p-3 text-sm font-medium">{f.form_type}</td>
+                        <td className="p-3 text-sm">{f.company_name}</td>
+                        <td className="p-3 text-sm">{f.financial_year}</td>
+                        <td className="p-3 text-sm">{f.due_date}</td>
+                        <td className="p-3 text-sm">{f.filing_date || '-'}</td>
+                        <td className="p-3">
+                          <Badge className={f.status === 'filed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}>
+                            {f.status}
+                          </Badge>
+                        </td>
+                        <td className="p-3 text-xs font-mono">{f.srn || '-'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          )}
+        </div>
+      )}
+
+      {activeTab === 'advance-tax' && (
+        <div className="space-y-4">
+          {advanceTax.length === 0 ? (
+            <Card className="p-12 text-center">
+              <Calendar className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium mb-2">No advance tax records</h3>
+              <p className="text-muted-foreground">Track advance tax installments due on 15-Jun, 15-Sep, 15-Dec, 15-Mar.</p>
+            </Card>
+          ) : (
+            <Card>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b text-left">
+                      <th className="p-3 text-xs font-medium text-muted-foreground">Inst.</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground">FY</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground">Due</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground">Amount Due</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground">Paid</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground">Balance</th>
+                      <th className="p-3 text-xs font-medium text-muted-foreground">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {advanceTax.map((a) => (
+                      <tr key={a.id} className="border-b last:border-0 hover:bg-muted/50">
+                        <td className="p-3 text-sm font-medium">#{a.installment_no}</td>
+                        <td className="p-3 text-sm">{a.financial_year}</td>
+                        <td className="p-3 text-sm">{a.due_date}</td>
+                        <td className="p-3 text-sm">₹{a.amount_due.toLocaleString()}</td>
+                        <td className="p-3 text-sm">₹{a.amount_paid.toLocaleString()}</td>
+                        <td className="p-3 text-sm font-medium">₹{(a.amount_due - a.amount_paid).toLocaleString()}</td>
+                        <td className="p-3">
+                          <Badge className={a.status === 'paid' ? 'bg-green-100 text-green-800' : a.status === 'partial' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'}>
+                            {a.status}
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          )}
+        </div>
       )}
 
       {showReturnModal && (

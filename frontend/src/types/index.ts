@@ -662,6 +662,50 @@ export interface TdsDeduction {
   challan_date?: string
 }
 
+export interface ItrFiling {
+  id: string
+  client_id: string
+  assessment_year: string
+  financial_year: string
+  form_type: string
+  status: 'draft' | 'in_progress' | 'review' | 'ready_to_file' | 'filed'
+  due_date?: string
+  filing_date?: string
+  gross_income: number
+  taxable_income: number
+  total_tax: number
+  tds_credited: number
+  refund_amount: number
+  tax_payable: number
+  itr_acknowledgement?: string
+  old_regime: boolean
+}
+
+export interface AdvanceTaxInstallment {
+  id: string
+  client_id: string
+  financial_year: string
+  installment_no: number
+  due_date: string
+  amount_due: number
+  amount_paid: number
+  status: string
+}
+
+export interface McaFiling {
+  id: string
+  client_id: string
+  financial_year: string
+  form_type: string
+  due_date: string
+  filing_date?: string
+  status: string
+  cin?: string
+  company_name: string
+  srn?: string
+  acknowledgement?: string
+}
+
 export interface TdsReturn {
   id: string
   client_id: string

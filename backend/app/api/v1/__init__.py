@@ -24,6 +24,7 @@ from app.api.v1.endpoints import (
     accounting_india,
     integrations_india,
     tds,
+    itr,
 )
 
 api_router = APIRouter()
@@ -51,3 +52,4 @@ api_router.include_router(gst.router, prefix="/gst", tags=["gst"])
 api_router.include_router(accounting_india.router, prefix="/india", tags=["india"])
 api_router.include_router(integrations_india.router, prefix="/india/integrations", tags=["india-integrations"])
 api_router.include_router(tds.router, prefix="/tds", tags=["tds"])
+api_router.include_router(itr.router, prefix="/itr", tags=["itr"])
