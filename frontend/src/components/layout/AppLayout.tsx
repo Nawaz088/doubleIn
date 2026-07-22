@@ -18,6 +18,7 @@ import {
   LogOut,
   Sun,
   Moon,
+  IndianRupee,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/context/AuthContext'
@@ -37,6 +38,7 @@ const navItems = [
   { icon: UserSquare2, label: 'Portal', href: '/portal' },
   { icon: Inbox, label: 'Inbox', href: '/inbox' },
   { icon: FileText, label: 'Tax', href: '/tax' },
+  { icon: IndianRupee, label: 'GST', href: '/gst' },
   { icon: Plug, label: 'Integrations', href: '/integrations' },
   { icon: Settings, label: 'Settings', href: '/settings' },
 ]

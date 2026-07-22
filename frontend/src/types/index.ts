@@ -429,6 +429,132 @@ export interface SyncLog {
   completed_at?: string
 }
 
+export interface GstRegistration {
+  id: string
+  client_id: string
+  gstin: string
+  trade_name?: string
+  legal_name: string
+  address?: string
+  state_code: string
+  state_name: string
+  registration_type: string
+  taxpayer_type: string
+  constitution?: string
+  status: string
+  registration_date?: string
+  cancellation_date?: string
+  filing_frequency: string
+  is_composition: boolean
+  e_invoice_enabled: boolean
+  e_waybill_enabled: boolean
+  gst_practice_head?: string
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface HsnSacCode {
+  id: string
+  code: string
+  description: string
+  type: 'hsn' | 'sac'
+  gst_rate: number
+  cgst_rate: number
+  sgst_rate: number
+  igst_rate: number
+  cess_rate: number
+  compensation_cess: number
+  chapter?: string
+  is_active: boolean
+  effective_from?: string
+  effective_to?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface GstInvoiceLine {
+  id?: string
+  invoice_id?: string
+  hsn_sac_code: string
+  description: string
+  quantity: number
+  unit_price: number
+  taxable_value: number
+  gst_rate: number
+  cgst_rate: number
+  sgst_rate: number
+  igst_rate: number
+  cgst_amount: number
+  sgst_amount: number
+  igst_amount: number
+  cess_amount: number
+  total_amount: number
+  sort_order: number
+}
+
+export interface GstInvoice {
+  id: string
+  client_id: string
+  gst_registration_id: string
+  invoice_number: string
+  invoice_date: string
+  invoice_type: string
+  supply_type: string
+  supply_place: string
+  is_inter_state: boolean
+  customer_name: string
+  customer_gstin?: string
+  customer_address?: string
+  customer_state_code?: string
+  total_taxable_value: number
+  total_cgst: number
+  total_sgst: number
+  total_igst: number
+  total_cess: number
+  total_invoice_value: number
+  e_invoice_irn?: string
+  e_waybill_number?: string
+  irn_generated_at?: string
+  status: 'draft' | 'final' | 'cancelled'
+  irn_status: string
+  filed_in_gstr: boolean
+  gstr_period?: string
+  notes?: string
+  created_at: string
+  updated_at: string
+  lines?: GstInvoiceLine[]
+}
+
+export interface GstReturn {
+  id: string
+  client_id: string
+  gst_registration_id: string
+  return_type: string
+  financial_year: string
+  return_period: string
+  due_date: string
+  filing_date?: string
+  status: 'pending' | 'in_progress' | 'filed' | 'error'
+  total_outward_taxable: number
+  total_outward_tax: number
+  total_inward_taxable: number
+  total_inward_tax: number
+  total_liability: number
+  total_credit: number
+  net_payable: number
+  itc_claimed: number
+  late_fee: number
+  interest: number
+  total_paid: number
+  arn?: string
+  error_message?: string
+  return_data?: Record<string, unknown>
+  filed_by?: string
+  created_at: string
+  updated_at: string
+}
+
 export interface Organization {
   id: string
   name: string
