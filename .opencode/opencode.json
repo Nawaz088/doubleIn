@@ -1,0 +1,13 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "doublehq": {
+      "type": "local",
+      "command": ["/home/nawaz/Documents/Nawaz/doublehq-clone/backend/.venv/bin/python3", "/home/nawaz/Documents/Nawaz/doublehq-clone/mcp-server/server.py"],
+      "enabled": true,
+      "env": {
+        "PYTHONPATH": "/home/nawaz/Documents/Nawaz/doublehq-clone/mcp-server"
+      }
+    }
+  }
+}

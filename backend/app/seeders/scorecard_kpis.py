@@ -1,0 +1,138 @@
+import uuid
+
+from app.models.scorecard import KpiDefinition
+
+PREBUILT_KPIS = [
+    {
+        "name": "Tasks Completed",
+        "description": "Number of tasks marked as done in the period",
+        "category": "productivity",
+        "unit": "count",
+        "data_source": "auto",
+        "computation_config": {"source": "tasks-completed"},
+        "is_prebuilt": True,
+        "sort_order": 1,
+    },
+    {
+        "name": "Closes On Time %",
+        "description": "Percentage of tasks completed on or before their due date",
+        "category": "productivity",
+        "unit": "%",
+        "data_source": "auto",
+        "computation_config": {"source": "closes-on-time-pct"},
+        "is_prebuilt": True,
+        "sort_order": 2,
+    },
+    {
+        "name": "Avg Close Time",
+        "description": "Average number of days to complete a task",
+        "category": "productivity",
+        "unit": "days",
+        "data_source": "auto",
+        "computation_config": {"source": "avg-close-time"},
+        "is_prebuilt": True,
+        "sort_order": 3,
+    },
+    {
+        "name": "Reports Generated",
+        "description": "Number of report packages generated in the period",
+        "category": "productivity",
+        "unit": "count",
+        "data_source": "auto",
+        "computation_config": {"source": "reports-generated"},
+        "is_prebuilt": True,
+        "sort_order": 4,
+    },
+    {
+        "name": "Open Action Items",
+        "description": "Number of unresolved action items from scorecards",
+        "category": "productivity",
+        "unit": "count",
+        "data_source": "auto",
+        "computation_config": {"source": "open-action-items"},
+        "is_prebuilt": True,
+        "sort_order": 5,
+    },
+    {
+        "name": "Revenue Per Client",
+        "description": "Average monthly revenue per active client",
+        "category": "financial",
+        "unit": "$",
+        "data_source": "manual",
+        "is_prebuilt": True,
+        "sort_order": 1,
+    },
+    {
+        "name": "Billable Hours",
+        "description": "Total billable hours logged in the period",
+        "category": "financial",
+        "unit": "hours",
+        "data_source": "manual",
+        "is_prebuilt": True,
+        "sort_order": 2,
+    },
+    {
+        "name": "Utilization Rate",
+        "description": "Percentage of available hours that were billable",
+        "category": "financial",
+        "unit": "%",
+        "data_source": "auto",
+        "computation_config": {"source": "utilization-rate"},
+        "is_prebuilt": True,
+        "sort_order": 3,
+    },
+    {
+        "name": "Effective Billing Rate",
+        "description": "Average billed revenue per billable hour",
+        "category": "financial",
+        "unit": "$/hr",
+        "data_source": "manual",
+        "is_prebuilt": True,
+        "sort_order": 4,
+    },
+    {
+        "name": "Client Satisfaction",
+        "description": "Average client satisfaction score (1-10)",
+        "category": "client_health",
+        "unit": "1-10",
+        "data_source": "manual",
+        "is_prebuilt": True,
+        "sort_order": 1,
+    },
+    {
+        "name": "Portal Adoption Rate",
+        "description": "Percentage of active clients who use the client portal",
+        "category": "client_health",
+        "unit": "%",
+        "data_source": "auto",
+        "computation_config": {"source": "portal-adoption-rate"},
+        "is_prebuilt": True,
+        "sort_order": 2,
+    },
+    {
+        "name": "Net Client Growth",
+        "description": "New clients minus churned clients in the period",
+        "category": "client_health",
+        "unit": "count",
+        "data_source": "auto",
+        "computation_config": {"source": "net-client-growth"},
+        "is_prebuilt": True,
+        "sort_order": 3,
+    },
+    {
+        "name": "Response SLA %",
+        "description": "Percentage of client messages responded to within SLA",
+        "category": "client_health",
+        "unit": "%",
+        "data_source": "manual",
+        "is_prebuilt": True,
+        "sort_order": 4,
+    },
+]
+
+
+async def seed_kpis(org_id: uuid.UUID, db):
+    for kpi_data in PREBUILT_KPIS:
+        kpi = KpiDefinition(org_id=org_id, **kpi_data)
+        db.add(kpi)
+    await db.commit()
