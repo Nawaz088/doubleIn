@@ -53,10 +53,10 @@ html.light {
   --color-success: hsl(142 72% 29%);
   --color-warning: hsl(38 92% 50%);
   --color-danger: hsl(0 84% 60%);
-  --color-sidebar: hsl(228 14% 8%);
-  --color-sidebar-foreground: hsl(220 9% 56%);
-  --color-sidebar-active: hsl(0 0% 100%);
-  --color-sidebar-active-bg: hsl(0 0% 100% / 0.08);
+  --color-sidebar: hsl(0 0% 100%);
+  --color-sidebar-foreground: hsl(220 9% 46%);
+  --color-sidebar-active: hsl(226 70% 55%);
+  --color-sidebar-active-bg: hsl(226 70% 55% / 0.08);
 }
 
 * {

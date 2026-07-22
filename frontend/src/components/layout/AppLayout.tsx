@@ -73,7 +73,7 @@ export function AppLayout() {
           collapsed ? 'w-16' : 'w-60',
         )}
       >
-        <div className="flex items-center gap-3 px-4 h-14 border-b border-white/5">
+        <div className="flex items-center gap-3 px-4 h-14 border-b border-border">
           <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary shrink-0">
             <span className="text-sm font-bold text-white">D</span>
           </div>
@@ -102,7 +102,7 @@ export function AppLayout() {
                         collapsed && 'justify-center px-2',
                         active
                           ? 'bg-sidebar-active-bg text-sidebar-active font-medium'
-                          : 'text-sidebar-foreground hover:text-foreground hover:bg-white/5',
+                          : 'text-sidebar-foreground hover:text-foreground hover:bg-accent',
                       )}
                       title={collapsed ? item.label : undefined}
                     >
@@ -116,7 +116,7 @@ export function AppLayout() {
           ))}
         </nav>
 
-        <div className="border-t border-white/5 p-2 space-y-1">
+        <div className="border-t border-border p-2 space-y-1">
           <button
             onClick={() => setCollapsed(!collapsed)}
             className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm text-sidebar-foreground hover:text-foreground hover:bg-white/5 transition-all"
@@ -125,7 +125,7 @@ export function AppLayout() {
           </button>
         </div>
 
-        <div className="border-t border-white/5 p-3 space-y-2">
+        <div className="border-t border-border p-3 space-y-2">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary shrink-0">
               {user?.name?.charAt(0)?.toUpperCase()}
@@ -139,7 +139,7 @@ export function AppLayout() {
           </div>
           <button
             onClick={logout}
-            className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm text-sidebar-foreground hover:text-red-400 hover:bg-red-500/10 transition-all"
+            className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm text-sidebar-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
           >
             <LogOut className="w-4 h-4 shrink-0" />
             {!collapsed && <span>Sign out</span>}
