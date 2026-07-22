@@ -183,6 +183,60 @@ export interface BankConnection {
   is_active: boolean
 }
 
+export interface IndianBankConnection {
+  id: string
+  client_id: string
+  provider: string
+  account_number: string
+  account_name: string
+  ifsc_code: string
+  bank_name: string
+  branch_name?: string
+  account_type: string
+  upi_id?: string
+  is_primary: boolean
+  is_active: boolean
+  last_synced_at?: string
+}
+
+export interface UpiTransaction {
+  id: string
+  client_id: string
+  upi_transaction_id: string
+  upi_ref_number?: string
+  payer_vpa?: string
+  payee_vpa?: string
+  amount: number
+  transaction_date: string
+  transaction_type: string
+  remark?: string
+  status: string
+  payment_method?: string
+}
+
+export interface ZohoBooksIntegration {
+  id: string
+  org_id: string
+  client_id?: string
+  organization_id: string
+  organization_name: string
+  zoho_email: string
+  is_active: boolean
+  last_sync_at?: string
+}
+
+export interface TallyIntegration {
+  id: string
+  org_id: string
+  name: string
+  tally_company_name: string
+  connection_type: string
+  tally_host: string
+  tally_port: number
+  is_active: boolean
+  last_sync_at?: string
+}
+
 export interface BankTransaction {
   id: string
   bank_connection_id: string

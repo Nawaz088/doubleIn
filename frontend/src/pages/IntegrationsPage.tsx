@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Plug, RefreshCw, CheckCircle2, XCircle, Clock, ExternalLink } from 'lucide-react'
+import { Plug, RefreshCw, CheckCircle2, XCircle, Clock, ExternalLink, IndianRupee, Building2, Smartphone } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -148,6 +148,70 @@ export function IntegrationsPage() {
             </Card>
           )
         })}
+      </div>
+
+      <div className="pt-6 border-t">
+        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+          <IndianRupee className="w-5 h-5" />
+          Indian Integrations
+        </h2>
+        <div className="grid gap-4 md:grid-cols-2">
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h3 className="font-semibold text-lg text-green-600">Zoho Books</h3>
+                  <p className="text-sm text-muted-foreground mt-1">Connect Zoho Books accounts</p>
+                </div>
+              </div>
+              <Button size="sm" variant="outline">
+                <Plug className="w-4 h-4 mr-1" /> Connect
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h3 className="font-semibold text-lg text-orange-600">Tally</h3>
+                  <p className="text-sm text-muted-foreground mt-1">XML/TDL integration with Tally ERP</p>
+                </div>
+              </div>
+              <Button size="sm" variant="outline">
+                <Plug className="w-4 h-4 mr-1" /> Configure
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h3 className="font-semibold text-lg text-blue-600">Indian Banks</h3>
+                  <p className="text-sm text-muted-foreground mt-1">Connect HDFC, ICICI, SBI accounts</p>
+                </div>
+              </div>
+              <Button size="sm" variant="outline">
+                <Building2 className="w-4 h-4 mr-1" /> Link Bank
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h3 className="font-semibold text-lg text-purple-600">UPI / Razorpay</h3>
+                  <p className="text-sm text-muted-foreground mt-1">UPI payments and Razorpay gateway</p>
+                </div>
+              </div>
+              <Button size="sm" variant="outline">
+                <Smartphone className="w-4 h-4 mr-1" /> Connect
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {selectedProvider && syncLogs[selectedProvider] && (
