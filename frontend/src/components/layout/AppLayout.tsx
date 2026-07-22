@@ -19,6 +19,7 @@ import {
   Sun,
   Moon,
   IndianRupee,
+  BookA,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/context/AuthContext'
@@ -35,6 +36,7 @@ const navItems = [
   { icon: BarChart3, label: 'Reports', href: '/reports' },
   { icon: Receipt, label: 'Receipts', href: '/receipts' },
   { icon: FileClock, label: 'Accruals', href: '/accruals' },
+  { icon: BookA, label: 'Chart of Accts', href: '/chart-of-accounts' },
   { icon: UserSquare2, label: 'Portal', href: '/portal' },
   { icon: Inbox, label: 'Inbox', href: '/inbox' },
   { icon: FileText, label: 'Tax', href: '/tax' },

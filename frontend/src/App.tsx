@@ -26,6 +26,7 @@ import { TaxPage } from './pages/TaxPage'
 import { InboxPage } from './pages/InboxPage'
 import { IntegrationsPage } from './pages/IntegrationsPage'
 import { GstPage } from './pages/GstPage'
+import { ChartOfAccountsPage } from './pages/ChartOfAccountsPage'
 import { SettingsPage } from './pages/SettingsPage'
 
 export default function App() {
@@ -76,6 +77,7 @@ export default function App() {
         <Route path="/inbox" element={<InboxPage />} />
         <Route path="/integrations" element={<IntegrationsPage />} />
         <Route path="/gst" element={<GstPage />} />
+        <Route path="/chart-of-accounts" element={<ChartOfAccountsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>

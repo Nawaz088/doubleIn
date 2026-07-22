@@ -12,6 +12,21 @@ const entityTypeLabels: Record<string, string> = {
   llc: 'LLC',
   corp: 'Corporation',
   sole_prop: 'Sole Proprietorship',
+  private_limited: 'Pvt Ltd',
+  public_limited: 'Public Ltd',
+  limited_liability_partnership: 'LLP',
+  partnership_firm: 'Partnership',
+  sole_proprietorship: 'Sole Proprietorship',
+  one_person_company: 'OPC',
+  section_8_company: 'Section 8',
+  producer_company: 'Producer Co.',
+  hindu_undivided_family: 'HUF',
+  association_of_persons: 'AOP',
+  body_of_individuals: 'BOI',
+  trust: 'Trust',
+  cooperative_society: 'Cooperative',
+  government_body: 'Govt Body',
+  foreign_company: 'Foreign Co.',
 }
 
 const statusConfig: Record<string, { label: string; variant: 'success' | 'warning' | 'outline' }> = {
@@ -218,9 +233,21 @@ export function ClientsPage() {
                     value={form.entity_type}
                     onChange={(e) => setForm((f) => ({ ...f, entity_type: e.target.value }))}
                   >
-                    <option value="llc">LLC</option>
-                    <option value="corp">Corporation</option>
-                    <option value="sole_prop">Sole Proprietorship</option>
+                    <option value="private_limited">Private Limited</option>
+                    <option value="public_limited">Public Limited</option>
+                    <option value="limited_liability_partnership">LLP</option>
+                    <option value="partnership_firm">Partnership Firm</option>
+                    <option value="sole_proprietorship">Sole Proprietorship</option>
+                    <option value="one_person_company">OPC</option>
+                    <option value="section_8_company">Section 8 Company</option>
+                    <option value="producer_company">Producer Company</option>
+                    <option value="hindu_undivided_family">HUF</option>
+                    <option value="association_of_persons">AOP</option>
+                    <option value="body_of_individuals">BOI</option>
+                    <option value="trust">Trust</option>
+                    <option value="cooperative_society">Cooperative Society</option>
+                    <option value="government_body">Government Body</option>
+                    <option value="foreign_company">Foreign Company</option>
                   </select>
                 </div>
                 <div>

@@ -101,7 +101,7 @@ export interface Client {
   id: string
   org_id: string
   name: string
-  entity_type: 'llc' | 'corp' | 'sole_prop'
+  entity_type: string
   status: 'active' | 'inactive' | 'quarterly'
   properties?: Record<string, unknown>
   integration_id?: string
@@ -553,6 +553,34 @@ export interface GstReturn {
   filed_by?: string
   created_at: string
   updated_at: string
+}
+
+export interface ChartOfAccount {
+  id: string
+  org_id: string
+  code: string
+  name: string
+  type: string
+  subtype?: string
+  schedule?: string
+  is_schedule_iii: boolean
+  parent_code?: string
+  is_active: boolean
+  description?: string
+  sort_order: number
+  created_at: string
+  updated_at: string
+}
+
+export interface FinancialYear {
+  id: string
+  org_id: string
+  fy: string
+  start_date: string
+  end_date: string
+  is_current: boolean
+  is_locked: boolean
+  previous_fy?: string
 }
 
 export interface Organization {

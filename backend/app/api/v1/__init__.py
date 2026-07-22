@@ -21,6 +21,7 @@ from app.api.v1.endpoints import (
     files,
     webhooks,
     gst,
+    accounting_india,
 )
 
 api_router = APIRouter()
@@ -45,3 +46,4 @@ api_router.include_router(users.router, prefix="/users", tags=["users"])
 api_router.include_router(files.router, prefix="/files", tags=["files"])
 api_router.include_router(webhooks.router, prefix="/webhooks", tags=["webhooks"])
 api_router.include_router(gst.router, prefix="/gst", tags=["gst"])
+api_router.include_router(accounting_india.router, prefix="/india", tags=["india"])
